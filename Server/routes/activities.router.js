@@ -4,7 +4,7 @@ const router = express.Router()
 const { getActivities, createActivity, addUserToActivity, editActivity, deleteActivity,removeUserFromActivity, changeUserState } = require('./../controllers/activities.controller') 
 
 router.route('/')
-    .get(auth_admin,getActivities)
+    .get(getActivities)
     .post(auth_admin, createActivity)
 
 router.route('/:activityid')
