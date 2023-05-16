@@ -9,7 +9,7 @@ module.exports={
         .then()
         .catch(err => {});
 
-        const rankingData = topUsers.map(topUsers => ({id: topUsers.id, pontos:topUsers.pontos }))
+        const rankingData = topUsers.map(topUsers => ({id: topUsers.id, pontos:topUsers.pontos, primeiroNome: topUsers.primeiroNome }))
         
         let LastYearRanking = await Ranking.findOne().sort({createdAt: -1}).limit(1).lean().then().catch(err => {})
         

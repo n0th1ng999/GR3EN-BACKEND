@@ -1,4 +1,5 @@
 const User = require('../models/user.model')
+const Activity = require('../models/activity.model')
 const {createToken,decodeToken,verifyToken} = require('./Helpers/jwtHelpers')
 
 module.exports={
@@ -9,7 +10,7 @@ module.exports={
         console.log('nao ha header') // trocar
         }
 
-
+        
         if(verifyToken(req.cookies.jwt)){
             //console.log('Token Válido')
             next()
@@ -45,6 +46,7 @@ module.exports={
             User.findById(userId).then(user => { 
                 if(user.conselhoEco){
                     //console.log('Admin!')
+                    res.locals.userId = userId
                     next()
                 }else{
                     res.status(403).send("This client is forbidden in this route")
@@ -79,4 +81,31 @@ module.exports={
             res.status(401).send("Client is not authenticated") 
         }
     },
+    auth_coordinator_activity: async (req,res,next) => {
+        
+        if(verifyToken(req.cookies.jwt)){
+            const userId = decodeToken(req.cookies.jwt).id
+            let activity
+            try{
+                
+                activity = await Activity.findById(req.params.activityid).exec()
+                
+            }catch(err){
+                
+                res.status(404).send({error:'wrong activity id'})
+                
+            }
+            if(activity?.coordenadorAtividade == userId){
+                res.locals.userId = userId
+                next()
+            }else{
+                console.log(activity.coordenadorAtividade)
+                console.log(userId)
+                res.status(403).send({message: 'Client is not coordinator of activity'})
+            }
+
+        }else{
+            res.status(401).send({message: "Client is not authenticated"}) 
+        }
+    }
 }

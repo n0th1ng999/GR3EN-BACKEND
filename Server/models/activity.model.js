@@ -6,9 +6,10 @@ const reqString = {
   required:true, 
 }
 
-const reqArray = {
-  type: Array,
+const reqArrayOfObjects = {
+  type: [ObjectId],
   required:true, 
+  default:[]
 }
 
 const reqNumber = {
@@ -30,15 +31,15 @@ const reqBoolean = {
 
 
 const activitySchema = mongoose.Schema({
-  participantesAtividadeNaoExecutado: reqArray,
-  participantesAtividadeExecutado: reqArray,
+  participantesAtividadeNaoExecutado: reqArrayOfObjects,
+  participantesAtividadeExecutado: reqArrayOfObjects,
   nomeAtividade:reqString,
   descAtividade: reqString,
   imagemAtividade: reqString,
   dataHoraAtividade: reqString,
   localAtividade: reqString,
   coordenadorAtividade: reqObjectId,
-  pontosAtividades: reqNumber,
+  pontosAtividade: reqNumber,
   statusAtividade: reqBoolean,
 })
 
