@@ -17,6 +17,11 @@ const reqNumber = {
   required:true, 
 }
 
+const reqDate = {
+  type: Date,
+  required:true, 
+}
+
 const reqObjectId = {
   type: ObjectId,
   required:true, 
@@ -36,7 +41,7 @@ const activitySchema = mongoose.Schema({
   nomeAtividade:reqString,
   descAtividade: reqString,
   imagemAtividade: reqString,
-  dataHoraAtividade: reqString,
+  dataHoraAtividade: reqDate,
   localAtividade: reqString,
   coordenadorAtividade: reqObjectId,
   pontosAtividade: reqNumber,
