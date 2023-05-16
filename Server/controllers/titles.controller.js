@@ -2,7 +2,7 @@ const Title = require('./../models/title.model')
 const isNumber = require('./Helpers/isNumber')
 
 module.exports={
-    getTitles:(req,res) =>{
+    getTitles: (req,res) =>{
         let {length = null, offset=null, titles = null} = req.query
         
         if(titles){
@@ -26,7 +26,7 @@ module.exports={
             res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
         
         }else if(titles){
-            Title.find().where('id').in(titles)
+            Title.find().where('_id').in(titles)
             .then((titles) => {res.status(206).json(titles)})
             .catch(err => res.status(400).send({err:err.message}))
         }else{
@@ -43,7 +43,7 @@ module.exports={
     },
 
     editTitle:(req,res) =>{
-        Title.updateOne({id:req.params.id},req.body)
+        Title.updateOne({_id:req.params.id},req.body)
         .then(title =>{
             if(title.modifiedCount > 0){
                 res.status(201).send(title)
@@ -55,7 +55,7 @@ module.exports={
     },
 
     deleteTitle:(req,res) => {
-        Title.deleteOne({id:req.params.id})
+        Title.deleteOne({_id:req.params.id})
         .then(title =>{
             if(title.deletedCount){
                 res.status(204).send({msg:'Deleted'})

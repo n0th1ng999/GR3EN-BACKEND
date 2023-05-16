@@ -5,33 +5,33 @@ const isNumber = require('./Helpers/isNumber')
 
 module.exports={
 
-    getOccurrences: (req,res) =>{
+    getOccurrences: async (req,res) =>{
         let {length=null, offset=null, occurrences = null} = req.query
         
         if(occurrences){
 
-            occurrences = occurrences.split(',')
-            
-                
+            occurrences = occurrences.split(',')      
             
         }
         if (length && offset){
             if(isNumber(length, (result)=>{return result}) || isNumber(offset, (result) => {return result})){    
-                res.status(400).send({error:"Only numbers are allowed in offset and length queries"})
+                await res.status(400).send({error:"Only numbers are allowed in offset and length queries"})
                 return
             }    
             Occurrence.find().skip(offset).limit(length).then(occurrences => {res.status(206).json(occurrences)}).catch(err => {res.status(400).send({err: err.message})})
         }else if(length || offset){
-            res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
+            await res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
         }else if (occurrences){
-            Occurrence.find().where('_id').in(occurrences)
+            await Occurrence.find().where('_id').in(occurrences)
             .then((occurrences) => {res.status(206).json(occurrences)})
             .catch(err => res.status(400).send({err:err.message}))
         }else{
-            Occurrence.find({'statusOcorrencia': false}).then((occurrences)=>{
-                res.status(200).json(occurrences)
+            
+            await Occurrence.find({'statusOcorrencia': false}).then((occurrences)=>{
+            res.status(200).json(occurrences)
             })
         }
+        
         console.log(Occurrence.find({'statusOcorrencia': true}))
 
         
