@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+
 const reqArray = {
   type: Array,
   required:true, 
@@ -13,13 +14,13 @@ const reqNumber = {
 const reqBoolean = {
   type: Boolean,
   required:true, 
+  default:false,
 }
 
 const reqString = {
   type: String,
   required:true, 
 }
-
 
 
 const userSchema = mongoose.Schema({
@@ -30,9 +31,10 @@ const userSchema = mongoose.Schema({
   password: reqString,
   idBadge: reqArray, 
   idTitulo: reqArray, 
-  ranking: reqNumber, 
-  idOcorrencia: reqArray, 
-  idAtividade: reqArray, 
+  ranking: {
+    type: Number,
+    default: 0,
+  }, 
   conselhoEco: reqBoolean, 
   verifierEco: reqBoolean, 
   pontos: {
@@ -43,11 +45,6 @@ const userSchema = mongoose.Schema({
 
 userSchema.pre('save', async (next) => {
   this.pontos = 0;
-  
-  
-  
-  
-
   next();
 });
 
