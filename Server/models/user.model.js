@@ -43,17 +43,7 @@ const userSchema = mongoose.Schema({
 
 userSchema.pre('save', async (next) => {
   this.pontos = 0;
-  
-  
-  
-  
-
   next();
 });
 
-
-
-
-
-
-module.exports = mongoose.model('Users', userSchema)  
+module.exports = mongoose.model('Users', userSchema)

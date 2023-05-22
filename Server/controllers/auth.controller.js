@@ -13,6 +13,7 @@ module.exports={
         
         if(verifyToken(req.cookies.jwt)){
             //console.log('Token Válido')
+            res.locals.userId = userId
             next()
         }else{
             res.status(401)
@@ -72,6 +73,7 @@ module.exports={
             User.findById(userId).then(user => { 
                 if(user.verifierEco){
                     //console.log('Verifier!')
+                    res.locals.userId = userId
                     next()
                 }else{
                     res.status(403).send("This client is forbidden in this route")

@@ -40,12 +40,12 @@ module.exports={
 
         }
     },
-    createActivity:async  (req,res) => {
+    createActivity: async  (req,res) => {
 
         req.body.coordenadorAtividade = res.locals.userId
 
         req.body.statusAtividade =  false
-        
+
         Activity.create(req.body)   
         .then((activity) => { res.status(201).send(activity)})
         .catch((err) => {res.status(400).send({error: err.message})})

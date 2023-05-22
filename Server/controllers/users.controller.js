@@ -67,7 +67,6 @@ module.exports={
         .catch(err => res.status(500).send({error: err.message}))
     },
     login: async (req,res) => {
-        console.log(req.body)
         User.findOne({'email':req.body.email}).then(user => {
         
             bcrypt.compare(req.body.password,user.password).then(result => {
