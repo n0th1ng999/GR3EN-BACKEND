@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { ObjectId } = require('mongodb')
 const bcrypt = require('bcrypt')
 
 const reqArray = {
@@ -22,19 +23,27 @@ const reqString = {
   required:true, 
 }
 
+const reqStringUnique = {
+  index: true,
+  type: String,
+  required:true,
+  unique:true
+}
+
+const ArrayOfObjects = {
+  type: [ObjectId],
+  default:[]
+}
+
 
 const userSchema = mongoose.Schema({
   primeiroNome: reqString,
   ultimoNome: reqString,
-  escola: reqString,
-  email: reqString,
+  escola  : reqString,
+  email: reqStringUnique,
   password: reqString,
-  idBadge: reqArray, 
-  idTitulo: reqArray, 
-  ranking: {
-    type: Number,
-    default: 0,
-  }, 
+  idBadge: ArrayOfObjects, 
+  idTitulo: ArrayOfObjects, 
   conselhoEco: reqBoolean, 
   verifierEco: reqBoolean, 
   pontos: {

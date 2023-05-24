@@ -15,7 +15,7 @@ module.exports={
         
         if(length && offset){   
            
-            if(isNumber(length, (result) => {return result}) || isNumber(offset, (result) => {return result})){
+            if(isNumber(length) || isNumber(offset)){
                 res.status(400).send({error: "Only numbers are allowed in offset and length queries"})
                 return
             }

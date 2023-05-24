@@ -7,42 +7,49 @@ module.exports={
         // search token in headers most commonly used for authorization
         const header = req.headers['x-access-token'] || req.headers.authorization;
         if (typeof header == 'undefined'){
-        console.log('nao ha header') // trocar
-        }
-
-        
-        if(verifyToken(req.cookies.jwt)){
-            //console.log('Token Válido')
-            res.locals.userId = userId
-            next()
-        }else{
             res.status(401)
-            res.send("Client is not authenticated") 
+            res.send({error:"Client is not authenticated"}) 
+        }else{
+            const bearer = header.split(' ')
+            if(verifyToken(bearer[1])){
+                //console.log('Token Válido')
+                res.locals.userId = decodeToken(bearer[1]).id 
+                next()
+            }
         }
+       
+        
     },auth_same_user: async (req,res,next)=>{
-        if(verifyToken(req.cookies.jwt)){
-            const userId = decodeToken(req.cookies.jwt).id 
+        // search token in headers most commonly used for authorization
+        const header = req.headers['x-access-token'] || req.headers.authorization;
+        if (typeof header == 'undefined'){
+            res.status(401)
+            res.send({error:"Client is not authenticated"}) 
+        }else{
+        const bearer = header.split(' ')
+        if(verifyToken(bearer[1])){
+            const userId = decodeToken(bearer[1]).id 
+            console.log(userId)
         if(userId == req.params.userid){
             next()
         }else{
             res.status(403).send({error: 'provided auth_key is not matching with user auth_key'})
         }
-        }else{
-            res.status(401)
-            res.send("Client is not authenticated") 
+        }
         }
     },
     auth_admin: async (req,res,next)=>{
         // search token in headers most commonly used for authorization
         const header = req.headers['x-access-token'] || req.headers.authorization;
         if (typeof header == 'undefined'){
-        console.log('nao ha header') // trocar
-        }
-
-        if(verifyToken(req.cookies.jwt)){
+            res.status(401)
+            res.send({error:"Client is not authenticated"}) 
+        }else{
+        const bearer = header.split(' ')
+        if(verifyToken(bearer[1])){
             //console.log('Válido')
 
-            const userId = decodeToken(req.cookies.jwt).id
+            const userId = decodeToken(bearer[1]).id
             
             User.findById(userId).then(user => { 
                 if(user.conselhoEco){
@@ -50,11 +57,10 @@ module.exports={
                     res.locals.userId = userId
                     next()
                 }else{
-                    res.status(403).send("This client is forbidden in this route")
+                    res.status(403).send({error:"This client is forbidden in this route"})
                 }
             })
-        }else{
-            res.status(401).send("Client is not authenticated") 
+        }
         }
 
     },
@@ -62,13 +68,17 @@ module.exports={
         // search token in headers most commonly used for authorization
         const header = req.headers['x-access-token'] || req.headers.authorization;
         if (typeof header == 'undefined'){
-        //console.log('nao ha header') // trocar
-        }
-
-        if(verifyToken(req.cookies.jwt)){
+            res.status(401)
+            res.send({error:"Client is not authenticated"}) 
+        }else{
+        const bearer = header.split(' ')
+        if(verifyToken(bearer[1])){
             //console.log('Válido')
-
-            const userId = decodeToken(req.cookies.jwt).id
+            try {
+                const userId = decodeToken(bearer[1]).id
+            } catch (error) {
+                res.status(400).send({error:"Invalid JWT token"})
+            }
             
             User.findById(userId).then(user => { 
                 if(user.verifierEco){
@@ -76,17 +86,22 @@ module.exports={
                     res.locals.userId = userId
                     next()
                 }else{
-                    res.status(403).send("This client is forbidden in this route")
+                    res.status(403).send({error:"This client is forbidden in this route"})
                 }
             })
-        }else{
-            res.status(401).send("Client is not authenticated") 
+        }
         }
     },
     auth_coordinator_activity: async (req,res,next) => {
-        
-        if(verifyToken(req.cookies.jwt)){
-            const userId = decodeToken(req.cookies.jwt).id
+        // search token in headers most commonly used for authorization
+        const header = req.headers['x-access-token'] || req.headers.authorization;
+        if (typeof header == 'undefined'){
+            res.status(401)
+            res.send({error:"Client is not authenticated"}) 
+        }else{
+        const bearer = header.split(' ')
+        if(verifyToken(bearer[1])){
+            const userId = decodeToken(bearer[1]).id
             let activity
             try{
                 
@@ -106,8 +121,7 @@ module.exports={
                 res.status(403).send({message: 'Client is not coordinator of activity'})
             }
 
-        }else{
-            res.status(401).send({message: "Client is not authenticated"}) 
         }
     }
+}
 }

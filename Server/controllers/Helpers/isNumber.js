@@ -6,8 +6,14 @@
 
 module.exports= (string,callback) => {
     if(isNaN(Number(string))){
-        return callback(true)
+        if(typeof callback == 'function')
+            return callback(true)
+        else 
+            return true
     }else{
-        return callback(false)
+        if(typeof callback == 'function')
+            return callback(false)
+        else 
+            return false
     }
 }
