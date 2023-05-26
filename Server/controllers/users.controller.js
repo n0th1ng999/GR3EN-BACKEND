@@ -163,7 +163,7 @@ module.exports={
             User.find().select('-password').skip(offset).limit(length).then(users => { res.status(206).json(users)}).catch(err => { res.status(400).send({err: err.message})})
          
         }else if(length || offset){
-            res.status(400).send({error: "You must use offset and length combined to get paginated resultss"})
+            res.status(400).send({error: "You must use offset and length combined to get paginated results"})
             return
         }else if(users){
             User.find().where('_id').in(users)
