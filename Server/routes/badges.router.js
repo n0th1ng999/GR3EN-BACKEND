@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const {auth_user,auth_admin} = require('../controllers/auth.controller')
-const {getBadges,createBadge} = require('../controllers/badges.controller.js')
+const {giveBadgeList,createBadge} = require('../controllers/badges.controller.js')
 
 module.exports = router
 
 router.route('/')
-    /* .get(getBadges) */
+    .put(giveBadgeList,auth_user)
     .post(auth_admin,createBadge)
 
 router.route('/:badgeid')
