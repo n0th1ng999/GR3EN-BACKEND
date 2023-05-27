@@ -30,7 +30,7 @@ module.exports={
         }
         User.updateOne({_id: req.params.userid}, req.body)
         .then(result => {
-            console.log(result)
+            /* console.log(result) */
             if (result.acknowledged){
                 if (result.matchedCount >0){
                     if(result.modifiedCount >0){
@@ -142,12 +142,14 @@ module.exports={
         .catch(err => res.status(400).json({error: err.message}))
         
     },
-    createUser: (req,res) => {
+    
+    /* createUser: (req,res) => {
         User.create(req.body)
         .then(user => res.status(200).json(user))
         .catch(err => res.status(400).json({error: err.message}))
 
-    },
+    }, */
+
     getUsers: async (req,res) => {
     
         let {length=null, offset=null, users = null} = req.query
@@ -163,7 +165,7 @@ module.exports={
             User.find().select('-password').skip(offset).limit(length).then(users => { res.status(206).json(users)}).catch(err => { res.status(400).send({err: err.message})})
          
         }else if(length || offset){
-            res.status(400).send({error: "You must use offset and length combined to get paginated resultss"})
+            res.status(400).send({error: "You must use offset and length combined to get paginated results"})
             return
         }else if(users){
             User.find().where('_id').in(users)
@@ -178,7 +180,7 @@ module.exports={
         }
     },
 
-    getPartUser: (req,res) => {
+    /* getPartUser: (req,res) => {
         // user = { primeiroNome:String, ultimoNome:String, ultimoNome:String, escola:String, password : String , email : String,  }
         let {length=null, offset=null, users = null} = req.query
         if(users)  
@@ -191,6 +193,6 @@ module.exports={
             .then((users) => { res.status(206).json(users) })
             .catch(err => res.status(500).send({error: err.message}))
         } 
-    },
+    }, */
     
 } 

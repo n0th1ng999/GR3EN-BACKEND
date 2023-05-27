@@ -47,19 +47,19 @@ module.exports={
         }else{
         const bearer = header.split(' ')
         if(verifyToken(bearer[1])){
-            //console.log('Válido')
+            console.log('Válido')
 
             const userId = decodeToken(bearer[1]).id
             
             User.findById(userId).then(user => { 
                 if(user.conselhoEco){
-                    //console.log('Admin!')
+                    console.log('Admin!')
                     res.locals.userId = userId
                     next()
                 }else{
                     res.status(403).send({error:"This client is forbidden in this route"})
                 }
-            })
+            }).catch(err =>  res.status(404).send({error:err.message}))
         }
         }
 

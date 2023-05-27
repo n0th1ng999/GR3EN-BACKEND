@@ -1,10 +1,12 @@
 const mongoose = require('mongoose')
 
 const reqString = {
+  required:true,
   type: String, 
 }
 
 const reqNumber = {
+  required:true,
   type:Number,
 }
 

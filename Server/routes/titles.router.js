@@ -10,4 +10,5 @@ router.route('/')
     router.route('/:id')
     .put(auth_admin,editTitle)
     .delete(auth_admin,deleteTitle)
+    
 module.exports = router

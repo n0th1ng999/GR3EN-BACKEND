@@ -53,6 +53,8 @@ module.exports={
             console.log(result)
             if(result?.statusOcorrencia != req.body?.statusOcorrencia){
                     //addPoints(result.idUser, result.pontosOcorrencia)}
+
+                    Occurrence.find()
             }else{
                     //removePoints(result.idUser, result.pontosOcorrencia)
                 }
