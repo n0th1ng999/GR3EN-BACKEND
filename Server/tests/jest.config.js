@@ -1,4 +1,4 @@
 module.exports = {
-    testEnvionment:'node',
+    testEnvironment:'node',
     "preset":"@shelf/jest-mongodb"
 }

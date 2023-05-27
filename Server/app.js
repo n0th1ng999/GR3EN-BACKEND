@@ -25,9 +25,11 @@ const {connectToDb} = require('./mongo')
 
 // server creation and listening for any incoming requests
 
-app.listen(config.port, config.hostname, (error) => {
+app.listen(config.port, config.hostname, async (error) => {
   
-  console.log(`App listening at http://${config.hostname}:${config.port}/`)
-  connectToDb()
+  await connectToDb()
+  /* console.log(`App listening at http://${config.hostname}:${config.port}/`) */
 
 })
+
+module.exports = app

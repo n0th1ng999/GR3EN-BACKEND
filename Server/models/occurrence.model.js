@@ -39,7 +39,6 @@ const occurrenceSchema = mongoose.Schema({
 occurrenceSchema.pre(
   "save", (next)=>{
     this.dataOcorrencia = Date.now
-    console.log(this.dataOcorrencia);
     next()
   }
 )

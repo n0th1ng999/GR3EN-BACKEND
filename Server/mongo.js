@@ -10,7 +10,7 @@ module.exports = {
         dbName: config.dbName,
         
         autoIndex: true } )
-      console.log('Connected to database:', mongoose.connection.db.databaseName);
+      // console.log('Connected to database:', mongoose.connection.db.databaseName);
      
     } catch (error) {
       console.log(error)

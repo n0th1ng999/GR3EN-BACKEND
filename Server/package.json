@@ -1,13 +1,17 @@
 {
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "chai": "^4.3.7",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.2.0",
-    "mongoose": "^7.0.3"
+    "mongoose": "^7.0.3",
+    "sinon-chai": "^3.7.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "dev": "node -r dotenv/config index.js dotenv_config_path=.env.dev"
   },
   "devDependencies": {
     "jest": "^29.5.0"

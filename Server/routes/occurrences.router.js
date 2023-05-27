@@ -5,7 +5,7 @@ const {getOccurrences,addOccurrence,editOccurrence,deleteOccurrence} = require('
 
 router.route('/')
     .get(getOccurrences)
-    .post(auth_user,addOccurrence)        
+    .post(addOccurrence)        
     
 
 router.route('/:occurrenceid')
