@@ -15,15 +15,29 @@ const giveBadge = (userid,nOcorrencias,idBadge) => {
    } 
 }
 
-const giveBadge2 = (userid,nomeLocalAtividade,idBadge) => {
+/* const giveBadge2 = (userid,nomeLocalAtividade,idBadge) => {
 
-}
+} */
 
 
 module.exports={
 
     getBadges: (req,res) => {
         Badge.find()
+        .then((result) => {res.status(200).json(result)})
+    },
+
+    getBadge: (req,res) => {
+        Badge.findById({_id: req.params.badgeid})
+        .then((result) => {
+            if(result != {}){
+                res.status(200).json(result)
+                /* console.log(result) */
+            }else{
+                res.status(404).send({message: "User not found."})
+            }
+        })
+        .catch(err => res.status(500).send({error: err.message}))
     },
 
     giveBadgeList:(userid)=>{
@@ -60,7 +74,7 @@ module.exports={
 
     editBadge : (req,res) =>{
         Badge.updateOne({_id:req.params.badgeid},req.body)
-        .then(result =>{
+        .then(result => {
             if (result.acknowledged){
                 if (result.matchedCount > 0){
                     if (result.modifiedCount > 0){
