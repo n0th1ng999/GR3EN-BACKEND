@@ -4,13 +4,15 @@
     "chai": "^4.3.7",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.2.0",
     "mongoose": "^7.0.3",
-    "sinon-chai": "^3.7.0"
+    "sinon-chai": "^3.7.0",
+    "supertest": "^6.3.3"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --watchAll --runInBand",
     "dev": "node -r dotenv/config index.js dotenv_config_path=.env.dev"
   },
   "devDependencies": {

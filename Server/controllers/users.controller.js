@@ -51,7 +51,7 @@ module.exports={
     deleteUser: (req,res) =>{
         User.deleteOne({_id: req.params.userid})
         .then((result) => {
-            console.log(result)
+            //console.log(result)
             if (result.deletedCount > 0 ){
                 res.status(204).send({message:`Sucessful deleted`})
             }else{

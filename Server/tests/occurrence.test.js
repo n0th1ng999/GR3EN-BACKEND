@@ -1,4 +1,4 @@
-  const app = require('../app')
+  const {app,server} = require('../app')
   const Occurrence = require('../models/occurrence.model')
   const request = require('supertest')
   const mongoose = require('mongoose')
@@ -20,6 +20,7 @@
   afterAll( async ()=>{
     await Occurrence.deleteMany({})
     await mongoose.connection.close()
+    await server.close()
   })
 
   
@@ -36,8 +37,9 @@
         categoriaOcorrencia:"funciona por favor",
         statusOcorrencia:false
       };
-      const res = await request(app).post('/occurrences').send(data);
+      const res = await request(app).post('/occurrences').send(data)
       expect(res.statusCode).toEqual(201);
+    
     })
     
     it('returns status code 400 if fields are missing', async()=>{
@@ -54,5 +56,6 @@
       const res = await request(app).post('/occurrences').send(data);
       expect(res.statusCode).toEqual(400);
     })
-
+    
+    
   })
