@@ -47,13 +47,11 @@ module.exports={
         }else{
         const bearer = header.split(' ')
         if(verifyToken(bearer[1])){
-            console.log('Válido')
-
             const userId = decodeToken(bearer[1]).id
             
             User.findById(userId).then(user => { 
                 if(user.conselhoEco){
-                    console.log('Admin!')
+        
                     res.locals.userId = userId
                     next()
                 }else{
@@ -116,8 +114,8 @@ module.exports={
                 res.locals.userId = userId
                 next()
             }else{
-                console.log(activity.coordenadorAtividade)
-                console.log(userId)
+                //console.log(activity.coordenadorAtividade)
+                //console.log(userId)
                 res.status(403).send({message: 'Client is not coordinator of activity'})
             }
 
