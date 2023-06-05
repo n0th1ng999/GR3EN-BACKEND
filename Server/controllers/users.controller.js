@@ -112,7 +112,6 @@ module.exports={
         
         User.findOne({'email':req.body.email}).then(user => {
             bcrypt.compare(req.body.password,user.password).then(result => {
-                console.log(result)
                 if(result){
                     const token = jwtHelpers.createToken(user.id)
                     res.status(200).cookie('jwt',token).json({Token:token})
@@ -121,7 +120,7 @@ module.exports={
                 }
             })
            
-        }).catch(err => res.status(400))
+        }).catch(err => res.status(400).send({error:'User does not exist'}))
         }else{
             
             res.status(400).json({error:'Missing fields (The fields are the following: email,password)'})

@@ -1,7 +1,7 @@
 const Occurrence = require('./../models/occurrence.model')
 const User = require('./../models/user.model')
 const isNumber = require('./Helpers/isNumber')
-
+const {giveBadgeForOccurrences,removeBadgeForOccurrences} = require('./Helpers/BadgesAndTitles')
 
 module.exports={
 
@@ -40,36 +40,46 @@ module.exports={
     
     addOccurrence:(req,res) => {
         req.body.dataOcorrencia = Date.now()
+        req.body.statusOcorrencia = false
         Occurrence.create(req.body)
         .then((occurrence) => {res.status(201).send(occurrence)})
         .catch((err) =>{res.status(400).send({error:err.message})})
     },
 
-    editOccurrence: (req,res) => {
-                   
-        console.log(req.params.occurrenceid)
-        Occurrence.findById(String(req.params.occurrenceid))
-        .then(result => { 
-            console.log(result)
-            if(result?.statusOcorrencia != req.body?.statusOcorrencia){
-                    //addPoints(result.idUser, result.pontosOcorrencia)}
-
-                    Occurrence.find()
-            }else{
-                    //removePoints(result.idUser, result.pontosOcorrencia)
-                }
-        }) 
+    editOccurrence: async (req,res) => {
         
-       Occurrence.updateOne({_id: req.params.occurrenceid}, req.body)
-        .then((occurrence) => {
-            if (occurrence.modifiedCount > 0){
-                res.status(201).send(occurrence)
-            }else{
-                res.status(404).send({msg:'Occurrence not found'})
+        
+        try {
+            const occurrence =  await Occurrence.findById(String(req.params.occurrenceid)).exec()
+           
+            if(req.body.hasOwnProperty('statusOcorrencia'))
+            if(occurrence.statusOcorrencia != req.body.statusOcorrencia){
+                const user = await User.findById(occurrence.idUser).exec() 
+         
+                
+                if(req.body.statusOcorrencia == true){
+                    user.pontos += occurrence.pontosOcorrencia
+                    //verificar badges
+                    giveBadgeForOccurrences(user._id)
+                }
+                if(req.body.statusOcorrencia == false){
+            
+                    user.pontos = user.pontos - occurrence.pontosOcorrencia
+                  
+                    User.updateOne({_id:user._id})
+                    removeBadgeForOccurrences(user._id)
+                }
 
-        }})    
+                User.updateOne({_id: user._id}, user).exec()
+            }
+
+            Occurrence.updateOne({_id: req.params.occurrenceid}, req.body).exec()
+            res.status(201).send({message:"Edit Successuful"})
+        } catch (error) {
+            res.status(400).send({message:error.message})
+        }
+        
     },
-
     deleteOccurrence: (req,res) =>{
         Occurrence.deleteOne({_id: req.params.occurrenceid})
         .then((occurrence) => {

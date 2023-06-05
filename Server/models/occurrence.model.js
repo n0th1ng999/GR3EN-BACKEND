@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb')
 const mongoose = require('mongoose')
 
 const reqDate = {
@@ -17,7 +18,14 @@ const reqNumber = {
   immutable:true 
 }
 
+const reqObjectId = {
+  type: ObjectId,
+  required:true,
+  immutable:true 
+}
+
 const reqBoolean ={
+  default:false,
   type: Boolean,
   required:true,
 }
@@ -27,11 +35,11 @@ const occurrenceSchema = mongoose.Schema({
   descricaoOcorrencia: reqString,
   localOcorrencia: reqString,
   dataOcorrencia: reqDate,
-  idUser : reqNumber,
+  idUser : reqObjectId,
   fotoOcorrencia: reqString,
   pontosOcorrencia: {type:Number, required:true},
   categoriaOcorrencia: reqString,
-  statusOcorrencia:reqBoolean,
+  statusOcorrencia:reqBoolean ,
   // or like this {type: type , required: boolean}
   
 })

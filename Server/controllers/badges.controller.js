@@ -55,7 +55,7 @@ module.exports={
 
     createBadge: async (req,res) => {
         Badge.create(req.body)
-        .then(res.status(201).send({message : 'Badge created.'}))
+        .then(result => res.status(201).send({message : 'Badge created.'}))
         .catch((err) =>{res.status(500).send({err:err.message})})
     },
 

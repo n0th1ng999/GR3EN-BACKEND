@@ -1,6 +1,7 @@
 const Activity = require('../models/activity.model')
 const User = require('../models/user.model')
 const isNumber = require('./Helpers/isNumber')
+const {giveBadgeForActivities,RemoveBadgeForActivities} = require('./Helpers/BadgesAndTitles')
 
 // Create a collection 
 // Activity.createCollection().then((collection) => {console.log(collection)}).catch(err => {console.log(err)})
@@ -43,7 +44,7 @@ module.exports={
     createActivity: async  (req,res) => {
 
         req.body.coordenadorAtividade = res.locals.userId
-
+        req.body.dataHoraAtividade = Date.now()
         req.body.statusAtividade =  false
 
         Activity.create(req.body)   
@@ -52,6 +53,8 @@ module.exports={
     },
     editActivity: async (req,res) => {
         delete req.body.statusAtividade
+        delete req.body.participantesAtividadeNaoExecutado
+        delete req.body.participantesAtividadeExecutado
         Activity.updateOne({_id: req.params.activityid}, req.body)
         .then(activity => { 
             if(activity.modifiedCount > 0){
@@ -59,7 +62,7 @@ module.exports={
             else{
                 res.status(404).send({error: 'Activity not found (Wrong Id)'})
                 }
-                })
+            })
         .catch(err => { res.status(400).send({err: err.message})})
     },
     deleteActivity:async  (req,res) => {
@@ -89,63 +92,62 @@ module.exports={
 
     },
     removeUserFromActivity: async (req,res) => {
-        let changed = false 
 
-         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.params.userid}})
+         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.params.userid},  $pull: {participantesAtividadeNaoExecutado : req.params.userid }})
         .then(result => {
-            //console.log(result)
+            console.log(result)
             if(result.modifiedCount > 0){
-                res.status(204).send()  
-                
+                res.status(204).send('tudo certo')  
+            }else{
+                res.status(400).json({error:'User does not exist'})
             }
         })
-        .catch(err => {res.status(400).send(err.message)});
+        .catch(err => {
+            res.status(400).send(err.message)
+        });
             
         
-         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeNaoExecutado : req.params.userid}})
-        .then(result => {
-            //console.log(result)
-            if(result.modifiedCount > 0){
-                res.status(204).send()  
-                
-            }
-        })
-        .catch(err => {res.status(400).send(err.message)}); 
 
-        
-
-        res.status(400).json({error:'User does not exist'})
         
         
     },
     changeUserState: async (req,res) => {
-        if(req.query.state == 'true'){
-            await Activity.updateOne({_id: req.params.activityid},{ $pull: {participantesAtividadeNaoExecutado : req.params.userid}})
-            .then(result => {
-             
-                if(result.modifiedCount > 0){
-                    Activity.updateOne({_id: req.params.activityid},{ $addToSet: {participantesAtividadeExecutado : req.params.userid}})
-                    .then(result => {}).catch(err => res.status(400).json(err))
-                    res.status(201).json(result)
-
-                }else{
-                    res.status(400).json({error:'user does not exist'})
-                }
-            })
-        }else if (req.query.state == 'false'){
-            await Activity.updateOne({_id: req.params.activityid},{ $pull: {participantesAtividadeExecutado : req.params.userid}})
-            .then(result => {
-                if(result.modifiedCount > 0){
-                    Activity.updateOne({_id: req.params.activityid},{ $addToSet: {participantesAtividadeNaoExecutado : req.params.userid}})
-                    .then(result => {}).catch(err => res.status(400).json(err))
-                    res.status(201).json(result)
-                }else{
-                    res.status(400).json({error:'user does not exist'})
-                }
-            })
-        }else{
-            res.status(400).send({error: 'Bad Query Use'})
+        console.log('starting')
+        let activity
+        try {
+            activity = await Activity.findById(req.params.activityid).exec()
+            
+            if(activity.participantesAtividadeNaoExecutado.some(user => user ==  req.params.userid)){
+    
+                activity.participantesAtividadeNaoExecutado = activity.participantesAtividadeNaoExecutado.filter(user => user != req.params.userid)
+                activity.participantesAtividadeExecutado.push(req.params.userid)
+    
+            }else if(activity.participantesAtividadeExecutado.some(user => user ==  req.params.userid)){
+                
+                activity.participantesAtividadeExecutado = activity.participantesAtividadeNaoExecutado.filter(user => user != req.params.userid)
+                activity.participantesAtividadeNaoExecutado.push(req.params.userid)
+    
+            }else{
+    
+                res.status(404).send({error:"User does not exist in activity"})
+                return
+            }
+        } catch (error) {
+            res.status(400).send({message:error.msg})
+            return
         }
+
+
+        try {
+            await Activity.updateOne({_id: req.params.activityid}, activity).exec()
+        } catch (error) {
+            res.status(500).send({message:error.msg})
+            return
+        }
+
+        res.status(201).send({message: 'User Status sucessufully changed'})
+        
+       
     },
     changeActivityState: async (req,res)=>{
 
@@ -157,9 +159,16 @@ module.exports={
            let users = await User.find({_id:activity.participantesAtividadeExecutado}).exec()
            
            if(!activity.statusAtividade){
-               users.map(users => users.pontos = users.pontos + activity.pontosAtividade)
-           }else{
-               users.map(users => users.pontos = users.pontos - activity.pontosAtividade)
+               users.map(user => user.pontos = user.pontos + activity.pontosAtividade)         
+                for (const user of users) {
+                    giveBadgeForActivities(user._id)     
+               }
+            }else{
+                users.map(user => user.pontos = user.pontos - activity.pontosAtividade)
+                for (const user of users) {
+                    RemoveBadgeForActivities(user._id)
+                }
+                           
            }
    
            users.forEach(user => User.updateOne({_id: user._id}, user).exec())

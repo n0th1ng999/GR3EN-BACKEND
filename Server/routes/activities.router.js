@@ -12,14 +12,14 @@ router.route('/:activityid')
 .delete(auth_admin,deleteActivity)
 
 router.route('/:activityid/change-activity-state')
-.put(auth_coordinator_activity,changeActivityState)
+.patch(auth_coordinator_activity,changeActivityState)
 
 router.route('/:activityid/users/:userid')
     .post(auth_user,addUserToActivity)
     .delete(auth_user,removeUserFromActivity)
 
 router.route('/:activityid/users/:userid/change-user-state')
-    .put(auth_verifier,changeUserState)
+    .patch(auth_verifier,changeUserState)
    
 
 module.exports = router

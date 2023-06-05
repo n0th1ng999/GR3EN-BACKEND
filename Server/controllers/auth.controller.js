@@ -71,25 +71,22 @@ module.exports={
         }else{
         const bearer = header.split(' ')
         if(verifyToken(bearer[1])){
-            //console.log('Válido')
-            try {
-                const userId = decodeToken(bearer[1]).id
-            } catch (error) {
-                res.status(400).send({error:"Invalid JWT token"})
-            }
+            const userId = decodeToken(bearer[1]).id
             
             User.findById(userId).then(user => { 
                 if(user.verifierEco){
-                    //console.log('Verifier!')
+        
                     res.locals.userId = userId
                     next()
                 }else{
                     res.status(403).send({error:"This client is forbidden in this route"})
                 }
-            })
+            }).catch(err =>  res.status(404).send({error:err.message}))
         }
         }
+
     },
+    
     auth_coordinator_activity: async (req,res,next) => {
         // search token in headers most commonly used for authorization
         const header = req.headers['x-access-token'] || req.headers.authorization;
@@ -108,7 +105,7 @@ module.exports={
             }catch(err){
                 
                 res.status(404).send({error:'wrong activity id'})
-                
+                return
             }
             if(activity?.coordenadorAtividade == userId){
                 res.locals.userId = userId
