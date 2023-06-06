@@ -5,10 +5,12 @@ const { getActivities, createActivity, addUserToActivity, editActivity, deleteAc
 
 router.route('/')
     .get(getActivities)
-    .post(auth_admin, createActivity)
+    .post(auth_admin,createActivity)
 
 router.route('/:activityid')
-.put(auth_user,editActivity)
+/* .put(auth_user,editActivity)
+.put(auth_coordinator_activity,changeActivityState) */
+.put(auth_coordinator_activity,editActivity)
 .delete(auth_admin,deleteActivity)
 
 router.route('/:activityid/change-activity-state')

@@ -11,7 +11,6 @@ module.exports={
             .then((result) => {
                 if(result != {}){
                     res.status(200).json(result)
-                    console.log(result)
                 }else{
                     res.status(404).send({message: "User not found."})
                 }
@@ -21,7 +20,6 @@ module.exports={
 
     editUser: async (req,res) => {
         req.body.pontos = 0
-        console.log(req.params)
         if (req.body.password){
             await bcrypt.genSalt().then(
                 salt => bcrypt.hash(req.body.password,salt).then( 
@@ -30,7 +28,6 @@ module.exports={
         }
         User.updateOne({_id: req.params.userid}, req.body)
         .then(result => {
-            /* console.log(result) */
             if (result.acknowledged){
                 if (result.matchedCount >0){
                     if(result.modifiedCount >0){
@@ -51,7 +48,6 @@ module.exports={
     deleteUser: (req,res) =>{
         User.deleteOne({_id: req.params.userid})
         .then((result) => {
-            //console.log(result)
             if (result.deletedCount > 0 ){
                 res.status(204).send({message:`Sucessful deleted`})
             }else{
@@ -65,7 +61,6 @@ module.exports={
         User.updateOne({_id:req.params.userid},{ $addToSet: {idTitle:req.body.titles} } )
         .select('idBadge')
         .then(result => {
-            console.log(result)
             if (result.acknowledged){
                 if (result.matchedCount > 0){
                     if(result.modifiedCount >0){
@@ -88,7 +83,6 @@ module.exports={
         User.updateOne({_id:req.params.userid},{ $addToSet: {idBadge:req.body.badges} } )
         .select('idBadge')
         .then(result => {
-            console.log(result)
             if (result.acknowledged){
                 if (result.matchedCount > 0){
                     if(result.modifiedCount >0){
@@ -125,7 +119,7 @@ module.exports={
             
             res.status(400).json({error:'Missing fields (The fields are the following: email,password)'})
         }
-    },
+      },
     
     register:async (req,res) => {
         await bcrypt.genSalt().then(
@@ -161,7 +155,7 @@ module.exports={
                 return
             }
 
-            User.find().select('-password').skip(offset).limit(length).then(users => { res.status(206).json(users)}).catch(err => { res.status(400).send({err: err.message})})
+            User.find().select('-password').skip(offset).limit(length).then(users => { res.status(200).json(users)}).catch(err => { res.status(400).send({err: err.message})})
          
         }else if(length || offset){
             res.status(400).send({error: "You must use offset and length combined to get paginated results"})
@@ -169,12 +163,12 @@ module.exports={
         }else if(users){
             User.find().where('_id').in(users)
             .select('-password')
-            .then((users) => { res.status(206).json(users) })
+            .then((users) => { res.status(200).json(users) })
             .catch(err => res.status(500).send({error: err.message}))
         }
         else{
             
-            User.find().select('-password').then((users) => { res.status(206).json(users) })
+            User.find().select('-password').then((users) => { res.status(200).json(users) })
             .catch(err => res.status(500).send({error: err.message}))
         }
     },
