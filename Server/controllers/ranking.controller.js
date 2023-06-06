@@ -50,7 +50,7 @@ module.exports={
                 res.status(400).send({error: "Only numbers are allowed in offset and length queries"})
                 return
             }
-            Ranking.find().skip(offset).limit(length).then(rankings => { res.status(206).json(rankings)}).catch(err => { res.status(400).send({err: err.message})})
+            Ranking.find().skip(offset).limit(length).then(rankings => { res.status(200).json(rankings)}).catch(err => { res.status(400).send({err: err.message})})
         
         }else if(length || offset){
             res.status(400).send({error: "You must use offset and length combined to get paginated results"})

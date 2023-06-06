@@ -12,7 +12,6 @@ module.exports={
         }else{
             const bearer = header.split(' ')
             if(verifyToken(bearer[1])){
-                //console.log('Token Válido')
                 res.locals.userId = decodeToken(bearer[1]).id 
                 next()
             }
@@ -29,7 +28,6 @@ module.exports={
         const bearer = header.split(' ')
         if(verifyToken(bearer[1])){
             const userId = decodeToken(bearer[1]).id 
-            console.log(userId)
         if(userId == req.params.userid){
             next()
         }else{
@@ -48,16 +46,14 @@ module.exports={
         const bearer = header.split(' ')
         if(verifyToken(bearer[1])){
             const userId = decodeToken(bearer[1]).id
-            
             User.findById(userId).then(user => { 
                 if(user.conselhoEco){
-        
                     res.locals.userId = userId
                     next()
                 }else{
                     res.status(403).send({error:"This client is forbidden in this route"})
                 }
-            }).catch(err =>  res.status(404).send({error:err.message}))
+            }).catch(err =>  res.status(500).send({error:err.message}))
         }
         }
 
@@ -111,8 +107,6 @@ module.exports={
                 res.locals.userId = userId
                 next()
             }else{
-                //console.log(activity.coordenadorAtividade)
-                //console.log(userId)
                 res.status(403).send({message: 'Client is not coordinator of activity'})
             }
 

@@ -18,7 +18,7 @@ module.exports={
                 await res.status(400).send({error:"Only numbers are allowed in offset and length queries"})
                 return
             }    
-            Occurrence.find().skip(offset).limit(length).then(occurrences => {res.status(206).json(occurrences)}).catch(err => {res.status(400).send({err: err.message})})
+            Occurrence.find().skip(offset).limit(length).then(occurrences => {res.status(200).json(occurrences)}).catch(err => {res.status(400).send({err: err.message})})
         }else if(length || offset){
             await res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
         }else if (occurrences){
@@ -32,7 +32,6 @@ module.exports={
             })
         }
         
-        console.log(Occurrence.find({'statusOcorrencia': true}))
 
         
         
@@ -83,7 +82,6 @@ module.exports={
     deleteOccurrence: (req,res) =>{
         Occurrence.deleteOne({_id: req.params.occurrenceid})
         .then((occurrence) => {
-            console.log(occurrence);
             if(occurrence.deletedCount){
                 res.status(204).send({msg:"Successful Delete"})
             }else{

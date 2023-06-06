@@ -17,25 +17,25 @@ module.exports={
         if(length && offset){   
            
             if(isNumber(length) || isNumber(offset)){
-                res.status(400).send({error: "Only numbers are allowed in offset and length queries"})
+                await res.status(400).send({error: "Only numbers are allowed in offset and length queries"})
                 return
             }
         
-            Activity.find().skip(offset).limit(length).then(activities => { res.status(206).json(activities)}).catch(err => { res.status(400).send({err: err.message})})
+            Activity.find().skip(offset).limit(length).then(activities => { res.status(200).json(activities)}).catch(err => { res.status(400).send({err: err.message})})
          
         }else if(length || offset){
 
-            res.status(400).json({error: "Incorrect query use (you must use offset and length at the same time)"})
+            await res.status(400).json({error: "Incorrect query use (you must use offset and length at the same time)"})
         
         }else if(activities){
 
-            Activity.find().where('_id').in(activities)
+            await Activity.find().where('_id').in(activities)
             .then((activities) => { res.status(206).json(activities) })
             .catch(err => res.status(400).send({error: err.message}))
 
         }else{
 
-            Activity.find().then((activities)=>{
+            await Activity.find().then((activities)=>{
                 res.status(200).json(activities)
             })
 
