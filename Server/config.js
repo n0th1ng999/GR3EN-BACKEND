@@ -20,7 +20,7 @@
         //SECRET
         jwtSecret: process.env.jwtSecret,
         //Max Age for the token in seconds
-        jwtMaxAge: 60 * 60 * 24 * 7 // Sete dias
+        jwtMaxAge: 60 * 60 * 24 * 360 // Sete dias
 
     }   
 

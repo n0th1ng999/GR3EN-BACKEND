@@ -1,166 +1,168 @@
-const User = require('../../models/user.model')
 const Badge = require('../../models/badge.model')
-const Ocurrence = require('../../models/occurrence.model')
+const Title = require('../../models/title.model')
+const Occurrence = require('../../models/occurrence.model')
 const Activity = require('../../models/activity.model')
 const { ObjectId } = require('mongodb')
 
 
-//BADGES FUNCTIONS --------------------------------------------------------------
 
-//ACTVITY COUNTER
-const giveBadgeForNumberOfActivities = async (userid,nActivities,badge) => {
-    
-    let activitiesList = await Activity.find({ $and: [{ participantesAtividadeExecutado:userid },{ statusAtividade:true}] }).exec()
-
-    if(activitiesList.length == nActivities){
-        let user = await User.findById(userid).exec()
-        
-        if(!user.idBadge.includes(badge._id)){
-
-            user.idBadge.push(badge._id)
-            
-            user.pontos += badge.pontosBadge
-        }
-     
-        User.updateOne({_id:userid},user).exec()
-    
-        return true
-   } 
-}
-
-const removeBadgeForNumberOfActivities = async (userid,nActivities,badge) => {
-    let activitiesList = await Activity.find({ $and: [{ participantesAtividadeExecutado:userid },{ statusAtividade:true}] }).exec()
-   
-
-    if((activitiesList.length + 1) == nActivities){
-        let user = await User.findById(userid).exec()
-        user.idBadge = user.idBadge.filter(badge => !badge.equals(badge._id) )
-        user.pontos = user.pontos - badge.pontosBadge
-        
-        User.updateOne({_id:userid},user).exec()
-        
-        return true
-   } 
-}
-
-//OCCURRENCE COUNTER
-const giveBadgeForNumberOfOccurrences = async (userid,nOccurrences,badge) => {
-    let occurrencesList = await Ocurrence.find({ $and: [{ idUser:userid },{ statusOcorrencia:true}] }).exec()
-
-    if(occurrencesList.length == nOccurrences){
-        
-        let user = await User.findById(userid).exec()
-        
-        if(!user.idBadge.includes(badge._id)){
-
-            user.idBadge.push(badge._id)
-            
-            user.pontos += badge.pontosBadge
-        }
-        
-        
-        User.updateOne({_id:userid},user).exec()
-    
-        return true
-   } 
-}
-
-const removeBadgeForNumberOfOccurrences = async (userid,nOccurrences,badge) => {
-    let occurrencesList = await Ocurrence.find({ $and: [{ idUser:userid },{ statusOcorrencia:true}] }).exec()
-   
-    if((occurrencesList.length + 1) == nOccurrences){
-        let user = await User.findById(userid).exec()
-        user.idBadge = user.idBadge.filter(badge => !badge.equals(badge._id) )
-        user.pontos = user.pontos - badge.pontosBadge
-        
-        User.updateOne({_id:userid},user).exec()
-        
-        return true
-   } 
-}
-
-//POINT COUNTER
-const giveBadgeForNumberOfPoints = async(userid,points,badge)=>{
-    
-    const user = await User.findById(userid)
-
-    if(user.pontos >= points){
-        user.idBadge.push(badge._id)
-        
-        await user.save()
-    } 
-}
-
-const removeBadgeForNumberOfPoints = async(userid,points,badge)=>{
-    const user = await User.findById(userid)
-
-    if(user.pontos >= points){
-        user.idBadge.push(badge._id)
-        await user.save()
-    }
-}
 
 module.exports ={
     //BADGES FUNCTIONS
-
-    //ACTVITY COUNTER
-    giveBadgeForActivities: async (userid)=>{
-
+    BadgeForActivities: async(user) => {
         const List_Of_Badges_For_Activities =  await Badge.find({type:"ActivityCounter"})
-       
-        List_Of_Badges_For_Activities.forEach(badge => {
-            giveBadgeForNumberOfActivities(userid,badge.requirement,badge)
-                
-        })
-        
-    },
-    RemoveBadgeForActivities: async (userid)=>{
-        const List_Of_Badges_For_Activities =  await Badge.find({type:"ActivityCounter"})
-       
-        
-        List_Of_Badges_For_Activities.forEach(badge => {
-            removeBadgeForNumberOfActivities(userid,badge.requirement,badge)       
-        })
-        
-    },
-    //OCCURRENCE COUNTER
-    giveBadgeForOccurrences: async (userid)=>{
 
-        const List_Of_Badges_For_Occurrences =  await Badge.find({type:"OccurrenceCounter"})
+        const ActivityCount = await Activity.find({$and:[{participantesAtividadeExecutado:user._id},{statusAtividade:true}]}).countDocuments().exec()
         
-        List_Of_Badges_For_Occurrences.forEach(badge => {
-            giveBadgeForNumberOfOccurrences(userid,badge.requirement,badge)
-                
-        })
-        
-    },
-    removeBadgeForOccurrences: async (userid)=>{
-        const List_Of_Badges_For_Occurrences =  await Badge.find({type:"OccurrenceCounter"})
-    
-        List_Of_Badges_For_Occurrences.forEach(badge => {
-            removeBadgeForNumberOfOccurrences(userid,badge.requirement,badge)
-                
-        })
-        
-    },
-    //POINT COUNTER
-    giveBadgeForPoints: async (userid)=>{
+        for (const badge of List_Of_Badges_For_Activities) {
 
-        const List_Of_Badges_For_Points =  await Badge.find({type:"OccurrencePoints"})
-        
-        List_Of_Badges_For_Points.forEach(badge => {
-            giveBadgeForNumberOfPoints(userid,badge.requirement,badge)
-                
-        })
+            if(badge.requirement <= ActivityCount){
+                if(!user.idBadge.some(badgeid => badgeid.equals(badge._id))){
+                    user.idBadge.push(badge._id)
+                    user.pontos = user.pontos + badge.pontosBadge
+                     
+                }
+            }else{
+                if(user.idBadge.some(badgeid => badgeid.equals(badge._id))){
+                    user.idBadge = user.idBadge.filter(badgeid => !badgeid.equals(badge._id))
+                    user.pontos = user.pontos - badge.pontosBadge
+                }
+            }
+        }
         
     },
-    removeBadgeForPoints: async (userid)=>{
-        const List_Of_Badges_For_Points =  await Badge.find({type:"OccurrencePoints"})
-    
-        List_Of_Badges_For_Points.forEach(badge => {
-            removeBadgeForNumberOfPoints(userid,badge.requirement,badge)
+    BadgeForOccurrences: async(user) => {
+        const List_Of_Badges_For_Occurrences =  await Badge.find({type:"OccurrenceCounter"})
+
+        const OccurrenceCount = await Occurrence.find({$and:[{idUser:user._id},{statusOcorrencia:true}]}).countDocuments().exec()
+        
+  
+        for (const badge of List_Of_Badges_For_Occurrences) {
+
+            if(badge.requirement <= OccurrenceCount){
+                if(!user.idBadge.some(badgeid => badgeid.equals(badge._id))){
+                    
+                    user.idBadge.push(badge._id)
+
+                    user.pontos = user.pontos + badge.pontosBadge   
+                }
+            }else{
+                if(user.idBadge.some(badgeid => badgeid.equals(badge._id))){
+
+                    user.idBadge = user.idBadge.filter(badgeid => !badgeid.equals(badge._id))
+
+                    user.pontos = user.pontos - badge.pontosBadge
+                }
+            }
+        }
+        
+        await user.save()
+    },
+    BadgeForPoints: async(user) => {
+      
+        const List_Of_Badges_For_Points =  await Badge.find({type:"PointCounter"})
+        
+        for (const badge of List_Of_Badges_For_Points) {
+            
+           
+            if(badge.requirement <= user.pontos){
+                if(!user.idBadge.some(badgeid => badgeid.equals(badge._id))){
+                    
+                    user.idBadge.push(badge._id)
+                    
+                    user.pontos = user.pontos + badge.pontosBadge   
+                    
                 
-        })
+                }
+            }else{
+                if(user.idBadge.some(badgeid => badgeid.equals(badge._id))){
+                    user.idBadge = user.idBadge.filter(badgeid => !badgeid.equals(badge._id))
+                    user.pontos = user.pontos - badge.pontosBadge
+
+                
+                }
+              
+            }
+        }
+        
+      
+        await user.save()
+    },
+    //Titles FUNCTIONS
+    TitlesForActivities: async(user) => {
+        const List_Of_Titles_For_Activities =  await Title.find({type:"ActivityCounter"})
+        
+        console.log(List_Of_Titles_For_Activities)
+
+        const ActivityCount = await Activity.find({$and:[{participantesAtividadeExecutado:user._id},{statusAtividade:true}]}).countDocuments().exec()
+        
+        for (const title of List_Of_Titles_For_Activities) {
+            
+            if(title.requirement <= ActivityCount){
+                if(!user.idTitulo.some(titleid => titleid.equals(title._id))){
+
+                    console.log(title)
+                    
+                    user.idTitulo.push(title._id)
+                    user.pontos = user.pontos + title.points
+                    
+                }
+            }else{
+                if(user.idTitulo.some(titleid => titleid.equals(title._id))){
+                    user.idTitulo = user.idTitulo.filter(titleid => !titleid.equals(title._id))
+                    user.pontos = user.pontos - title.points
+                }
+            }
+        }
+    
+    },
+    TitlesForOccurrences: async(user) => {
+        const List_Of_Titles_For_Occurrences =  await Title.find({type:"OccurrenceCounter"})
+        
+        const OccurrenceCount = await Occurrence.find({$and:[{idUser:user._id},{statusOcorrencia:true}]}).countDocuments().exec()
+        
+        
+        
+        for (const title of List_Of_Titles_For_Occurrences) {
+            
+            if(title.requirement <= OccurrenceCount){
+                if(!user.idTitulo.some(titleid => titleid.equals(title._id))){
+                    user.idTitulo.push(title._id)
+                    user.pontos = user.pontos + title.points   
+                }
+            }else{
+                if(user.idTitulo.some(titleid => titleid.equals(title._id))){
+                    user.idTitulo = user.idTitulo.filter(titleid => !titleid.equals(title._id))
+                    user.pontos = user.pontos - title.points
+                }
+            }
+        }
+        
+        
+    },
+    TitlesForPoints: async(user) => {
+        
+        const List_Of_Titles_For_Points =  await Title.find({type:"PointCounter"})
+        
+        for (const title of List_Of_Titles_For_Points) {
+            
+            if(title.requirement <= user.pontos){
+                if(!user.idTitulo.some(titleid => titleid.equals(title._id))){
+    
+                    user.idTitulo.push(title._id)
+                    user.pontos = user.pontos + title.points   
+
+        
+                }
+            }else{
+                if(user.idTitulo.some(titleid => titleid.equals(title._id))){
+                    user.idTitulo = user.idTitulo.filter(titleid => !titleid.equals(title._id))
+                    user.pontos = user.pontos - title.points
+                }
+            }
+        }
+        
+     
         
     },
     

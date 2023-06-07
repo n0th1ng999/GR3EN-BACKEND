@@ -1,7 +1,7 @@
 const Occurrence = require('./../models/occurrence.model')
 const User = require('./../models/user.model')
 const isNumber = require('./Helpers/isNumber')
-const {giveBadgeForOccurrences,removeBadgeForOccurrences} = require('./Helpers/BadgesAndTitles')
+const {BadgeForOccurrences,BadgeForPoints,TitlesForOccurrences,TitlesForPoints} = require('./Helpers/BadgesAndTitles')
 
 module.exports={
 
@@ -46,33 +46,45 @@ module.exports={
     },
 
     editOccurrence: async (req,res) => {
-        
-        
         try {
             const occurrence =  await Occurrence.findById(String(req.params.occurrenceid)).exec()
-           
+            
+            await Occurrence.updateOne({_id: req.params.occurrenceid}, req.body).exec()
+
             if(req.body.hasOwnProperty('statusOcorrencia'))
             if(occurrence.statusOcorrencia != req.body.statusOcorrencia){
+
+                occurrence.statusOcorrencia = req.body.statusOcorrencia
+                
+
                 const user = await User.findById(occurrence.idUser).exec() 
-         
+                
                 
                 if(req.body.statusOcorrencia == true){
-                    user.pontos += occurrence.pontosOcorrencia
-                    //verificar badges
-                    giveBadgeForOccurrences(user._id)
+
+                    user.pontos = user.pontos + occurrence.pontosOcorrencia
+            
+                    await BadgeForOccurrences(user)
+                    await TitlesForOccurrences(user)
+                    await BadgeForPoints(user)
+                    await TitlesForPoints(user)
+             
                 }
                 if(req.body.statusOcorrencia == false){
-            
+                    
                     user.pontos = user.pontos - occurrence.pontosOcorrencia
-                  
-                    User.updateOne({_id:user._id})
-                    removeBadgeForOccurrences(user._id)
+                    
+                    await BadgeForOccurrences(user)
+                    await TitlesForOccurrences(user)
+                    await BadgeForPoints(user)
+                    await TitlesForPoints(user)
+             
                 }
 
-                User.updateOne({_id: user._id}, user).exec()
+                await user.save()
             }
 
-            Occurrence.updateOne({_id: req.params.occurrenceid}, req.body).exec()
+            
             res.status(201).send({message:"Edit Successuful"})
         } catch (error) {
             res.status(400).send({message:error.message})

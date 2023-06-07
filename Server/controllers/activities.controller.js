@@ -1,7 +1,7 @@
 const Activity = require('../models/activity.model')
 const User = require('../models/user.model')
 const isNumber = require('./Helpers/isNumber')
-const {giveBadgeForActivities,RemoveBadgeForActivities} = require('./Helpers/BadgesAndTitles')
+const {BadgeForActivities,BadgeForPoints,TitlesForActivities,TitlesForPoints} = require('./Helpers/BadgesAndTitles')
 
 // Create a collection 
 // Activity.createCollection().then((collection) => {console.log(collection)}).catch(err => {console.log(err)})
@@ -161,16 +161,25 @@ module.exports={
            if(!activity.statusAtividade){
                users.map(user => user.pontos = user.pontos + activity.pontosAtividade)         
                 for (const user of users) {
-                    giveBadgeForActivities(user._id)     
-               }
+                    
+                    await BadgeForActivities(user)
+                    await TitlesForActivities(user)
+                    await BadgeForPoints(user)
+                    await TitlesForPoints(user)
+
+                }
             }else{
                 users.map(user => user.pontos = user.pontos - activity.pontosAtividade)
                 for (const user of users) {
-                    RemoveBadgeForActivities(user._id)
+                    
+                    await BadgeForActivities(user)
+                    await TitlesForActivities(user)
+                    await BadgeForPoints(user)
+                    await TitlesForPoints(user)
+                    
                 }
                            
            }
-   
            users.forEach(user => User.updateOne({_id: user._id}, user).exec())
    
            res.status(200).send({message:'Activity Changed'})
