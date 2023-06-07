@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const {getUser,register,login,getUsers}=require('../Server/controllers/users.controller')
-const {auth_user,auth_admin,auth_same_user} = require('../Server/controllers/auth.controller') // Authentication Middleware 
-const {editUser,deleteUser,titles,badges} = require('../Server/controllers/users.controller.js')
+const {getUser,register,login,getUsers}=require('..controllers/users.controller')
+const {auth_user,auth_admin,auth_same_user} = require('../controllers/auth.controller') // Authentication Middleware 
+const {editUser,deleteUser,titles,badges} = require('../controllers/users.controller.js')
 const User = require('../Server/models/user.model')
 
 
