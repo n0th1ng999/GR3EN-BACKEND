@@ -1,4 +1,8 @@
+
 {
+  "name": "green-backend",
+  "description": "backend do website green",
+  "main": ".app.js",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "chai": "^4.3.7",
