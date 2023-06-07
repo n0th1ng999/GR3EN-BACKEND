@@ -2,7 +2,7 @@
 {
   "name": "green-backend",
   "description": "backend do website green",
-  "main": ".app.js",
+  "main": "./app.js",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "chai": "^4.3.7",
@@ -17,7 +17,7 @@
     "supertest": "^6.3.3"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "node ./app.js",
     "test": "jest --watchAll --runInBand",
     "dev": "node -r dotenv/config index.js dotenv_config_path=.env.dev"
   },
