@@ -8,8 +8,6 @@ const User = require('../models/user.model')
 
 router.route('/')
     .get(auth_admin,getUsers)
-
-router.route('/register')    
     .post(register)
 
 router.route('/login')
