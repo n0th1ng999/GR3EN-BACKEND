@@ -3,6 +3,9 @@ const express = require('express');
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
 const app = express();
+const cors = require('cors')
+app.use (cors({ origin: '*'}))
+
 
 
 //Middleware
