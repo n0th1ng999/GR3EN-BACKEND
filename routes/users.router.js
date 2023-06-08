@@ -7,7 +7,7 @@ const User = require('../models/user.model')
 
 
 router.route('/')
-    .get(auth_admin,getUsers)
+    .get(getUsers)
     .post(register)
 
 router.route('/login')
