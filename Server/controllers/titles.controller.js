@@ -17,13 +17,12 @@ module.exports={
         }
 
         if(length && offset){
-            if(isNumber(length) || isNumber(offset)){
+            if(isNumber(length, (result) => {return result}) || isNumber(offset, (result) => {return result})){
                 res.status(400).send({error:"Only numbers are allowed in offset and length queries."})
                 return   
             }
             Title.find().skip(offset).limit(length).then(titles => {res.status(200).json(titles)}).catch(err => {res.status(400).send({error: err.message})})
         }else if(length || offset){
-           
             res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
         
         }else if(titles){

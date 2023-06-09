@@ -45,7 +45,7 @@ let userId
           pontosAtividade: 1,
           statusAtividade: false,
         };
-      const user =
+        const user =
         {
           primeiroNome:"test1",
           ultimoNome:"test1",

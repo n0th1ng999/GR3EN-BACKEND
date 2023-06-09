@@ -1,5 +1,5 @@
-const Occurrence = require('../models/occurrence.model')
-const User = require('../models/user.model')
+const Occurrence = require('./../models/occurrence.model')
+const User = require('./../models/user.model')
 const isNumber = require('./Helpers/isNumber')
 const {BadgeForOccurrences,BadgeForPoints,TitlesForOccurrences,TitlesForPoints} = require('./Helpers/BadgesAndTitles')
 
