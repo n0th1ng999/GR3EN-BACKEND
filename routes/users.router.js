@@ -11,7 +11,7 @@ router.route('/')
     .post(register)
 
 router.route('/login')
-    .get(login)
+    .post(login)
 
 router.route('/:userid')
     .put(auth_same_user,editUser)
