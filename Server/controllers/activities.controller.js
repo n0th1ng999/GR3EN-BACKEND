@@ -95,7 +95,6 @@ module.exports={
 
          Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.params.userid},  $pull: {participantesAtividadeNaoExecutado : req.params.userid }})
         .then(result => {
-            console.log(result)
             if(result.modifiedCount > 0){
                 res.status(204).send('tudo certo')  
             }else{
@@ -112,7 +111,6 @@ module.exports={
         
     },
     changeUserState: async (req,res) => {
-        console.log('starting')
         let activity
         try {
             activity = await Activity.findById(req.params.activityid).exec()

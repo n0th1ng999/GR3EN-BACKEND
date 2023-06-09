@@ -16,7 +16,9 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
   
 beforeAll(async() =>{
-    await mongoose.connect(process.env.MONGODB_URI)
+
+  await mongoose.connect(process.env.MONGODB_URI)
+  console.log("ola")
 }) 
 
 beforeEach(async() =>{
@@ -34,17 +36,7 @@ afterAll( async ()=>{
 let userId
 describe('creating new occurrence', ()=>{
   it('returns status code 201 if occurrence is created', async()=>{
-    const data ={
-      nomeOcorrencia: "funciona por favor",
-      descricaoOcorrencia: "funciona por favor",
-      localOcorrencia: "funciona por favor",
-      dataOcorrencia: Date.now(),
-      idUser : 1,
-      fotoOcorrencia: "funciona por favor",
-      pontosOcorrencia: 100,
-      categoriaOcorrencia:"funciona por favor",
-      statusOcorrencia:false
-    };
+    
     const user =
     {
       primeiroNome:"test1",
@@ -59,7 +51,20 @@ describe('creating new occurrence', ()=>{
       pontos:0,
     }
     const userCreate = await request(app).post('/users').send(user)
+    
     userId = decodeToken(userCreate.body.Token).id
+    const data ={
+      nomeOcorrencia: "funciona por favor",
+      descricaoOcorrencia: "funciona por favor",
+      localOcorrencia: "funciona por favor",
+      dataOcorrencia: Date.now(),
+      idUser : userId,
+      fotoOcorrencia: "funciona por favor",
+      pontosOcorrencia: 100,
+      categoriaOcorrencia:"funciona por favor",
+      statusOcorrencia:false
+    };
+
     const userToken = createToken(userId)
     const res = await request(app).post('/occurrences').set('Authorization', 'Bearer ' + userToken).send(data)
     expect(res.statusCode).equal(201);
@@ -246,17 +251,6 @@ describe('Get Occurrences', ()=>{
   })
 
   it('returns status code 201 if occurrence state changes', async()=>{
-    const data ={
-      nomeOcorrencia: "funciona por favor",
-      descricaoOcorrencia: "funciona por favor",
-      localOcorrencia: "funciona por favor",
-      dataOcorrencia: Date.now(),
-      idUser : 1,
-      fotoOcorrencia: "funciona por favor",
-      pontosOcorrencia: 100,
-      categoriaOcorrencia:"funciona por favor",
-      statusOcorrencia:false
-    };
     const user =
     {
       primeiroNome:"test1",
@@ -270,12 +264,24 @@ describe('Get Occurrences', ()=>{
       verifierEco: true, 
       pontos:0,
     }
+    const data ={
+      nomeOcorrencia: "funciona por favor", 
+      descricaoOcorrencia: "funciona por favor",
+      localOcorrencia: "funciona por favor",
+      dataOcorrencia: Date.now(),
+      idUser : userId,
+      fotoOcorrencia: "funciona por favor",
+      pontosOcorrencia: 100,
+      categoriaOcorrencia:"funciona por favor",
+      statusOcorrencia:false
+    };
     const createUser = await request(app).post('/users').send(user)
     userId=decodeToken(createUser.body.Token).id
-    const userToken = createToken(String(userId))
+    const userToken = createToken(userId)
     const postOcc= await request(app).post('/occurrences').set('Authorization', 'Bearer ' + userToken).send(data)
     const OccID = String(postOcc.body._id)
-    const res = await request(app).put('/occurrences/' + OccID).set('Authorization', 'Bearer ' + userToken).send({statusOcorrencia:true})
+    const res = await request(app).put(`/occurrences/${OccID}`).set('Authorization', 'Bearer ' + userToken).send()
+    console.log(res)
     expect(res.statusCode).equal(201)
   })
   it('returns status code 401 if invalid auth key', async()=>{
@@ -382,17 +388,6 @@ describe('Get Occurrences', ()=>{
 
 describe('Delete Occurrence', ()=>{
   it('returns status code 204 deleted', async()=>{
-    const data ={
-      nomeOcorrencia: "funciona por favor",
-      descricaoOcorrencia: "funciona por favor",
-      localOcorrencia: "funciona por favor",
-      dataOcorrencia: Date.now(),
-      idUser : 1,
-      fotoOcorrencia: "funciona por favor",
-      pontosOcorrencia: 100,
-      categoriaOcorrencia:"funciona por favor",
-      statusOcorrencia:false
-    };
     const user =
     {
       primeiroNome:"test1",
@@ -408,7 +403,18 @@ describe('Delete Occurrence', ()=>{
     }
     const createUser = await request(app).post('/users').send(user)
     userId=decodeToken(createUser.body.Token).id
-    const userToken = createToken(String(userId))
+    const data ={
+      nomeOcorrencia: "funciona por favor",
+      descricaoOcorrencia: "funciona por favor",
+      localOcorrencia: "funciona por favor",
+      dataOcorrencia: Date.now(),
+      idUser : userId,
+      fotoOcorrencia: "funciona por favor",
+      pontosOcorrencia: 100,
+      categoriaOcorrencia:"funciona por favor",
+      statusOcorrencia:false
+    };
+    const userToken = createToken(userId)
     const postOcc= await request(app).post('/occurrences').set('Authorization', 'Bearer ' + userToken).send(data)
     const OccID = String(postOcc.body._id)
     const res = await request(app).delete('/occurrences/' + OccID).set('Authorization', 'Bearer ' + userToken)

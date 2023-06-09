@@ -30,7 +30,7 @@ afterAll( async ()=>{
     await server.close()
 })
 
-describe('GET badges', ()=>{
+describe('GET title', ()=>{
     it('returns status code 200 if correct query use', async()=>{
         const user =
         {
@@ -41,14 +41,16 @@ describe('GET badges', ()=>{
           password:"test1",
           idBadge: [], 
           idTitulo: [], 
-          conselhoEco: false, 
+          conselhoEco: true, 
           verifierEco: false, 
           pontos:0,
         }
         const data =
         {
-            name: "reqString", // or like this {type: type , required: boolean}
-            points: 10,
+          name: "reqString", // or like this {type: type , required: boolean}
+          points: 10,
+          type: "ActivityCounter",
+          requirement: 1
         };
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
@@ -66,19 +68,21 @@ describe('GET badges', ()=>{
           password:"test1",
           idBadge: [], 
           idTitulo: [], 
-          conselhoEco: false, 
+          conselhoEco: true, 
           verifierEco: false, 
           pontos:0,
         }
         const data =
         {
-            name: "reqString", // or like this {type: type , required: boolean}
-            points: 10,
+          name: "reqString", // or like this {type: type , required: boolean}
+          points: 10,
+          type: "ActivityCounter",
+          requirement: 1
         };
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
         const userToken = createToken(String(userId))
-        const res = await request(app).get('/titles?offset=1&length=1').set('Authorization', 'Bearer ' + userToken).send(data)
+        const res = await request(app).get('/titles?offset=1&length=1')
         expect(res.statusCode).equal(200)
       })
       it('returns status code 400 if incorrect query use', async()=>{
@@ -97,13 +101,15 @@ describe('GET badges', ()=>{
         }
         const data =
         {
-            name: "reqString", // or like this {type: type , required: boolean}
-            points: 10,
+          name: "reqString", // or like this {type: type , required: boolean}
+          points: 10,
+          type: "ActivityCounter",
+          requirement: 1
         };
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
         const userToken = createToken(String(userId))
-        const res = await request(app).post('/titles?offset=1').set('Authorization', 'Bearer ' + userToken).send(data)
+        const res = await request(app).get('/titles?offset=1').set('Authorization', 'Bearer ' + userToken).send(data)
         expect(res.statusCode).equal(400)
       })
       it('returns status code 400 if incorrect query use', async()=>{
@@ -122,13 +128,15 @@ describe('GET badges', ()=>{
         }
         const data =
         {
-            name: "reqString", // or like this {type: type , required: boolean}
-            points: 10,
+          name: "reqString", // or like this {type: type , required: boolean}
+          points: 10,
+          type: "ActivityCounter",
+          requirement: 1
         };
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
         const userToken = createToken(String(userId))
-        const res = await request(app).post('/titles?offset=a&length=b').set('Authorization', 'Bearer ' + userToken).send(data)
+        const res = await request(app).get('/titles?offset=a&length=b').set('Authorization', 'Bearer ' + userToken).send(data)
         expect(res.statusCode).equal(400)
       })
   
@@ -146,17 +154,20 @@ describe('POST Title', ()=>{
       idBadge: [], 
       idTitulo: [], 
       conselhoEco: true, 
-      verifierEco: true, 
+      verifierEco: false, 
       pontos:0,
     }
     const data =
     {
         name: "reqString", // or like this {type: type , required: boolean}
         points: 10,
+        type: "ActivityCounter",
+        requirement: 1
     };
     const createUser = await request(app).post('/users').send(user)
     userId=decodeToken(createUser.body.Token).id
-    const userToken = createToken(String(userId))
+    const userToken = createToken((userId))
+    
     const res = await request(app).post('/titles').set('Authorization', 'Bearer ' + userToken).send(data)
     expect(res.statusCode).equal(201)
   })

@@ -12,7 +12,7 @@ module.exports={
                     if(!result){
                         res.status(400).send({error:"Only numbers are allowed in title query."})
                     }
-                })
+                }) 
             });
         }
 
@@ -21,7 +21,7 @@ module.exports={
                 res.status(400).send({error:"Only numbers are allowed in offset and length queries."})
                 return   
             }
-            Title.find().skip(offset).limit(length).then(titles => {res.status(206).json(titles)}).catch(err => {res.status(400).send({error: err.message})})
+            Title.find().skip(offset).limit(length).then(titles => {res.status(200).json(titles)}).catch(err => {res.status(400).send({error: err.message})})
         }else if(length || offset){
             res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
         
@@ -38,7 +38,7 @@ module.exports={
 
     createTitle:(req,res) =>{
         Title.create(req.body)
-        .then((title) => {res.status(201).send({message: 'Successuful title Creation'})})
+        .then((title) => {res.status(201).send({message: 'Successful title Creation'})})
         .catch(err => {res.status(400).send({error:err.message})})
     },
 

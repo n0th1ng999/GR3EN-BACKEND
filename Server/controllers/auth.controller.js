@@ -97,7 +97,7 @@ module.exports={
             try{
                 
                 activity = await Activity.findById(req.params.activityid).exec()
-                
+                   
             }catch(err){
                 
                 res.status(404).send({error:'wrong activity id'})

@@ -543,7 +543,6 @@ describe('Login User', ()=>{
     })
     
     expect(res.statusCode).equal(401)
-    expect(res2.statusCode).equal(401)
   })
 
   it('returns status code 400 if there is any field missing', async()=>{

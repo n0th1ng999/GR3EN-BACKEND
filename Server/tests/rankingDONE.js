@@ -7,10 +7,10 @@ const databaseLink = process.env.MONGODB_URI
 const RealDate = Date.now
 const {decodeToken,verifyToken,createToken} = require('../controllers/Helpers/jwtHelpers')
 
-const path = require('path');
 const { expect } = require('chai')
 
 
+const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
   
@@ -98,9 +98,10 @@ describe('POST Ranking', ()=>{
     };
     const createUser = await request(app).post('/users').send(user)
     userId=decodeToken(createUser.body.Token).id
+    console.log(userId)
     const userToken = createToken(String(userId))
     const createRanking = await request(app).post('/rankings')
-    const res = await request(app).post('/rankings').send(data)
+    const res = await request(app).post('/rankings').set('Authorization', 'Bearer ' + userToken).send(data)
     expect(res.statusCode).equal(201)
   })
 })

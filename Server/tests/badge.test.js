@@ -47,15 +47,17 @@ describe('GET badges', ()=>{
         }
         const data =
         {
-            nomeBadge: "reqString", // or like this {type: type , required: boolean}
-            descricaoBadge: "reqString",
-            imagemBadge: "reqString",
-            pontosBadge: 10
+          nomeBadge: "reqString", 
+          descricaoBadge: "reqString",
+          imagemBadge: "reqString",
+          pontosBadge: 10,
+          type: "ActivityCounter",
+          requirement: 5
         };
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
         const userToken = createToken(String(userId))
-        const res = await request(app).get('/badges').set('Authorization', 'Bearer ' + userToken).send(data)
+        const res = await request(app).get('/badges').set('Authorization', 'Bearer ' + userToken)
         expect(res.statusCode).equal(200)
       })
     it('returns status code 200 if correct query use', async()=>{
@@ -74,18 +76,20 @@ describe('GET badges', ()=>{
         }
         const data =
         {
-            nomeBadge: "reqString", // or like this {type: type , required: boolean}
-            descricaoBadge: "reqString",
-            imagemBadge: "reqString",
-            pontosBadge: 10
-        };
+          nomeBadge: "reqString", 
+          descricaoBadge: "reqString",
+          imagemBadge: "reqString",
+          pontosBadge: 10,
+          type: "ActivityCounter",
+          requirement: 5
+        }
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
         const userToken = createToken(String(userId))
         const res = await request(app).get('/badges?offset=1&length=1').set('Authorization', 'Bearer ' + userToken).send(data)
         expect(res.statusCode).equal(200)
       })
-      it('returns status code 400 if incorrect query use', async()=>{
+    it('returns status code 404 if badge not found', async()=>{
         const user =
         {
           primeiroNome:"test1",
@@ -101,45 +105,20 @@ describe('GET badges', ()=>{
         }
         const data =
         {
-            nomeBadge: "reqString", // or like this {type: type , required: boolean}
-            descricaoBadge: "reqString",
-            imagemBadge: "reqString",
-            pontosBadge: 10
-        };
-        const createUser = await request(app).post('/users').send(user)
-        userId=decodeToken(createUser.body.Token).id
-        const userToken = createToken(String(userId))
-        const res = await request(app).post('/badges?offset=1').set('Authorization', 'Bearer ' + userToken).send(data)
-        expect(res.statusCode).equal(400)
-      })
-      it('returns status code 400 if incorrect query use', async()=>{
-        const user =
-        {
-          primeiroNome:"test1",
-          ultimoNome:"test1",
-          escola:"ESMAD1",
-          email:"test1@mail.com",
-          password:"test1",
-          idBadge: [], 
-          idTitulo: [], 
-          conselhoEco: true, 
-          verifierEco: true, 
-          pontos:0,
+          nomeBadge: "reqString", 
+          descricaoBadge: "reqString",
+          imagemBadge: "reqString",
+          pontosBadge: 10,
+          type: "ActivityCounter",
+          requirement: 5
         }
-        const data =
-        {
-            nomeBadge: "reqString", // or like this {type: type , required: boolean}
-            descricaoBadge: "reqString",
-            imagemBadge: "reqString",
-            pontosBadge: 10
-        };
         const createUser = await request(app).post('/users').send(user)
         userId=decodeToken(createUser.body.Token).id
         const userToken = createToken(String(userId))
-        const res = await request(app).post('/badges?offset=a&length=b').set('Authorization', 'Bearer ' + userToken).send(data)
-        expect(res.statusCode).equal(400)
+        const createBadge = await request(app).post('/badges').set('Authorization', 'Bearer ' + userToken).send(data)
+        const res = await request(app).get('/badges/').set('Authorization', 'Bearer ' + userToken)
+        expect(res.statusCode).equal(200)
       })
-  
 })
 
 describe('POST Badges', ()=>{
@@ -158,16 +137,47 @@ describe('POST Badges', ()=>{
       pontos:0,
     }
     const data =
-    {
-        nomeBadge: "reqString", // or like this {type: type , required: boolean}
-        descricaoBadge: "reqString",
-        imagemBadge: "reqString",
-        pontosBadge: 10
-    };
+        {
+          nomeBadge: "reqString", 
+          descricaoBadge: "reqString",
+          imagemBadge: "reqString",
+          pontosBadge: 10,
+          type: "ActivityCounter",
+          requirement: 5
+        }
     const createUser = await request(app).post('/users').send(user)
     userId=decodeToken(createUser.body.Token).id
     const userToken = createToken(String(userId))
     const res = await request(app).post('/badges').set('Authorization', 'Bearer ' + userToken).send(data)
     expect(res.statusCode).equal(201)
+  })
+  it('returns status code 200 if badge is given', async()=>{
+    const user =
+    {
+      primeiroNome:"test1",
+      ultimoNome:"test1",
+      escola:"ESMAD1",
+      email:"test1@mail.com",
+      password:"test1",
+      idBadge: [], 
+      idTitulo: [], 
+      conselhoEco: true, 
+      verifierEco: true, 
+      pontos:0,
+    }
+    const data =
+        {
+          nomeBadge: "reqString", 
+          descricaoBadge: "reqString",
+          imagemBadge: "reqString",
+          pontosBadge: 10,
+          type: "ActivityCounter",
+          requirement: 5
+        }
+    const createUser = await request(app).post('/users').send(user)
+    userId=decodeToken(createUser.body.Token).id
+    const userToken = createToken(String(userId))
+    const res = await request(app).post('/badges').set('Authorization', 'Bearer ' + userToken).send(data)
+    expect(res.statusCode).equal(200)
   })
 })

@@ -34,7 +34,7 @@ module.exports={
                 res.status(200).json(result)
                 /* console.log(result) */
             }else{
-                res.status(404).send({message: "User not found."})
+                res.status(404).send({message: "Badge not found."})
             }
         })
         .catch(err => res.status(500).send({error: err.message}))

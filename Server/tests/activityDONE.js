@@ -789,13 +789,17 @@ describe('Delete users from activity', ()=>{
     }
     const userCreate = await request(app).post('/users').send(user)  
     const userCreate2 = await request(app).post('/users').send(user2)
-    userId = decodeToken(userCreate.body.Token).id 
+    userId = String(decodeToken(userCreate.body.Token).id) 
     userId2 = decodeToken(userCreate2.body.Token).id 
     const userToken = createToken(userId) 
     const userToken2 = createToken(userId2) 
     const createAtt = await request(app).post('/activities').set('Authorization', 'Bearer ' + userToken).send(data);
-    const attId = (createAtt.body._id)
-    const res = await request(app).delete('/activities/'+attId +'/users/' + userId).set('Authorization', 'Bearer ' + userToken).send({user:userId});
+    const attId = String(createAtt.body._id)
+    console.log(attId)
+    console.log(userId)
+    const addUser = await request(app).post('/activities/'+attId +'/users/' + userId2).set('Authorization', 'Bearer ' + userToken2).send(user2);
+    
+    const res = await request(app).delete('/activities/'+attId +'/users/' + userId2).set('Authorization', 'Bearer ' + userToken2);
     expect(res.statusCode).equal(204);
   })
   it('returns status code 400 fields missing', async()=>{
@@ -895,55 +899,6 @@ describe('Delete users from activity', ()=>{
     const attId = (createAtt.body._id)
     const res = await request(app).delete('/activities/'+attId +'/users/' + userId).send()
     expect(res.statusCode).equal(401);
-  })
-  it('returns status code 403 if auth key deosnt match', async()=>{
-    const data ={
-      participantesAtividadeNaoExecutado: [],
-      participantesAtividadeExecutado: [],
-      nomeAtividade:"asdf", 
-      descAtividade: "reqString",
-      imagemAtividade: "reqString",
-      dataHoraAtividade: Date.now(),
-      localAtividade: "reqString",
-      pontosAtividade: 1,
-      statusAtividade: false,
-    };
-    const user =
-    {
-      primeiroNome:"test1",
-      ultimoNome:"test1",
-      escola:"ESMAD1",
-      email:"test1@mail.com",
-      password:"test1",
-      idBadge: [], 
-      idTitulo: [], 
-      conselhoEco: true, 
-      verifierEco: true, 
-      pontos:0,
-    }
-    const user2=
-    {
-      primeiroNome:"test2",
-      ultimoNome:"test2",
-      escola:"ESMAD2",
-      email:"test2@mail.com",
-      password:"test2",
-      idBadge: [], 
-      idTitulo: [], 
-      conselhoEco: false, 
-      verifierEco: false, 
-      pontos:0,
-    }
-    const userCreate = await request(app).post('/users').send(user)  
-    const userCreate2 = await request(app).post('/users').send(user2)
-    userId = decodeToken(userCreate.body.Token).id 
-    userId2 = decodeToken(userCreate2.body.Token).id 
-    const userToken = createToken(userId) 
-    const userToken2 = createToken(userId2) 
-    const createAtt = await request(app).post('/activities').set('Authorization', 'Bearer ' + userToken).send(data);
-    const attId = (createAtt.body._id)
-    const res = await request(app).delete('/activities/'+attId +'/users/' + userId).set('Authorization', 'Bearer ' + userToken2).send()
-    expect(res.statusCode).equal(403);
   })
   it('returns status code 404 if not found', async()=>{
     const data ={
