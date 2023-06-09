@@ -110,7 +110,7 @@ module.exports={
             bcrypt.compare(req.body.password,user.password).then(result => {
                 if(result){
                     const token = jwtHelpers.createToken(user.id)
-                    res.status(200).cookie('jwt',token).json({Token:token})
+                    res.status(200).cookie('jwt',token).json({Token:token, id:user._id})
                 }else{
                     res.status(401).json({error: 'Wrong Password'})
                 }
@@ -132,7 +132,7 @@ module.exports={
         User.create(req.body)
         .then(user => {
             const token = jwtHelpers.createToken(user.id)
-            res.status(201).cookie('jwt',token).json({Token:token})
+            res.status(201).cookie('jwt',token).json({Token:token, id:user._id})
         })
         .catch(err => res.status(400).json({error: err.message}))
         
