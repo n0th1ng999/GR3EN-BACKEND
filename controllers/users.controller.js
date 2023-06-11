@@ -9,7 +9,18 @@ const isNumber = require('./Helpers/isNumber.js')
 module.exports={
 
      getUser:(req,res) => {
-            User.findOne({_id: req.params.userid})
+            User.findOne({_id: req.params.userid}).select('-password')
+            .then((result) => {
+                if(result != {}){
+                    res.status(200).json(result)
+                }else{
+                    res.status(404).send({message: "User not found."})
+                }
+            })
+            .catch(err => res.status(500).send({error: err.message}))
+    },
+     getProfile:(req,res) => {
+            User.findOne({_id: res.locals.userId})
             .then((result) => {
                 if(result != {}){
                     res.status(200).json(result)
@@ -21,7 +32,7 @@ module.exports={
     },
 
     editUser: async (req,res) => {
-        req.body.pontos = 0
+        delete req.body.pontos 
         if (req.body.password){
             await bcrypt.genSalt().then(
                 salt => bcrypt.hash(req.body.password,salt).then( 
@@ -46,6 +57,32 @@ module.exports={
         })
         .catch((err) =>{res.status(500).send({err:err.message})})
     },
+    editProfile: async (req,res) => {
+        delete req.body.pontos 
+        if (req.body.password){
+            await bcrypt.genSalt().then(
+                salt => bcrypt.hash(req.body.password,salt).then( 
+                    hash => req.body.password = hash
+                )).catch(err => err)
+        }
+        User.updateOne({_id: res.locals.userId}, req.body)
+        .then(result => {
+            if (result.acknowledged){
+                if (result.matchedCount >0){
+                    if(result.modifiedCount >0){
+                        res.status(201).send({message: "Profile sucessfuly updated."})
+                    }else{
+                        res.status(400).send({message: "Profile not updated."})
+                    }
+                }else{
+                    res.status(404).send({message: "Profile not Found."})
+                }
+            }else{
+                res.status(400).send({message: "Params don't coincide with user object."})
+            }
+        })
+        .catch((err) =>{res.status(500).send({err:err.message})})
+    },
     
     deleteUser: (req,res) =>{
         User.deleteOne({_id: req.params.userid})
@@ -54,6 +91,17 @@ module.exports={
                 res.status(204).send({message:`Sucessful deleted`})
             }else{
                 res.status(404).send({message: "User not found."})
+            }
+        })    
+        .catch((err) =>{res.status(500).send({err:err.message})})
+    },
+    deleteProfile: (req,res) =>{
+        User.deleteOne({_id: res.locals.userId})
+        .then((result) => {
+            if (result.deletedCount > 0 ){
+                res.status(204).send({message:`Profile Sucessfully deleted`})
+            }else{
+                res.status(404).send({message: "Profile not found."})
             }
         })    
         .catch((err) =>{res.status(500).send({err:err.message})})
@@ -110,7 +158,7 @@ module.exports={
             bcrypt.compare(req.body.password,user.password).then(result => {
                 if(result){
                     const token = jwtHelpers.createToken(user.id)
-                    res.status(200).cookie('jwt',token).json({Token:token, id:user._id})
+                    res.status(200).cookie('jwt',token).json({Token:token})
                 }else{
                     res.status(401).json({error: 'Wrong Password'})
                 }
@@ -132,18 +180,11 @@ module.exports={
         User.create(req.body)
         .then(user => {
             const token = jwtHelpers.createToken(user.id)
-            res.status(201).cookie('jwt',token).json({Token:token, id:user._id})
+            res.status(201).cookie('jwt',token).json({Token:token})
         })
         .catch(err => res.status(400).json({error: err.message}))
         
     },
-    
-    /* createUser: (req,res) => {
-        User.create(req.body)
-        .then(user => res.status(200).json(user))
-        .catch(err => res.status(400).json({error: err.message}))
-
-    }, */
 
     getUsers: async (req,res) => {
     
@@ -175,19 +216,6 @@ module.exports={
         }
     },
 
-    /* getPartUser: (req,res) => {
-        // user = { primeiroNome:String, ultimoNome:String, ultimoNome:String, escola:String, password : String , email : String,  }
-        let {length=null, offset=null, users = null} = req.query
-        if(users)  
-            users = users.split(',')
-        if(length && offset){
-            User.find().skip(offset).limit(length).then(users => { res.status(206).json(users)}).catch(err => { res.status(400).send({err: err.message})})
-        }else if(users){
-            User.find().where('_id').in(users)
-            .select('primeiroNome ultimoNome escola email password')
-            .then((users) => { res.status(206).json(users) })
-            .catch(err => res.status(500).send({error: err.message}))
-        } 
-    }, */
+
     
 } 
