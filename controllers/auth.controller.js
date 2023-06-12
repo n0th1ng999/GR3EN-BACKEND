@@ -14,6 +14,9 @@ module.exports={
             if(verifyToken(bearer[1])){
                 res.locals.userId = decodeToken(bearer[1]).id 
                 next()
+            }else{
+                res.status(401)
+                res.send({error:"Invalid token (timed out)"}) 
             }
         }
        
@@ -33,6 +36,9 @@ module.exports={
         }else{
             res.status(403).send({error: 'provided auth_key is not matching with user auth_key'})
         }
+        }else{
+            res.status(401)
+            res.send({error:"Invalid token (timed out)"}) 
         }
         }
     },
@@ -54,6 +60,9 @@ module.exports={
                     res.status(403).send({error:"This client is forbidden in this route"})
                 }
             }).catch(err =>  res.status(500).send({error:err.message}))
+        }else{
+            res.status(401)
+            res.send({error:"Invalid token (timed out)"}) 
         }
         }
 
@@ -78,6 +87,9 @@ module.exports={
                     res.status(403).send({error:"This client is forbidden in this route"})
                 }
             }).catch(err =>  res.status(404).send({error:err.message}))
+        }else{
+            res.status(401)
+            res.send({error:"Invalid token (timed out)"}) 
         }
         }
 
@@ -110,6 +122,9 @@ module.exports={
                 res.status(403).send({message: 'Client is not coordinator of activity'})
             }
 
+        }else{
+            res.status(401)
+            res.send({error:"Invalid token (timed out)"}) 
         }
     }
 }
