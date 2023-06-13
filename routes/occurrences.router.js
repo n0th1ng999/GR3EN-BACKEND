@@ -4,7 +4,7 @@ const {auth_user,auth_admin, auth_verifier} = require('../controllers/auth.contr
 const {getOccurrences,addOccurrence,editOccurrence,deleteOccurrence} = require('../controllers/occurrences.controller')
 
 router.route('/')
-    .get(auth_verifier,getOccurrences)
+    .get(getOccurrences)
     .post(auth_user,addOccurrence)        
     
 

@@ -6,8 +6,19 @@ const {BadgeForOccurrences,BadgeForPoints,TitlesForOccurrences,TitlesForPoints} 
 module.exports={
 
     getOccurrences: async (req,res) =>{
-        let {length=null, offset=null, occurrences = null} = req.query
+        let { length= null, offset=null, occurrences = null, userid = null } = req.query
         
+        if(userid){
+            try {
+                res.status(200).json(await Occurrence.find({idUser:userid}))
+                return
+            } catch (error) {
+      
+                res.status(500).send()
+                return
+            } 
+        }
+
         if(occurrences){
 
             occurrences = occurrences.split(',')      

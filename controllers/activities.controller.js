@@ -8,7 +8,18 @@ const {BadgeForActivities,BadgeForPoints,TitlesForActivities,TitlesForPoints} = 
 
 module.exports={
     getActivities:async (req, res)=> {
-        let {length=null, offset=null, activities = null} = req.query
+        let {length=null, offset=null, activities = null, userid = null} = req.query
+        
+        if(userid){
+            try {
+                res.status(200).json(await Activity.find({$or:[{participantesAtividadeExecutado:userid},{participantesAtividadeNaoExecutado:userid}]}))
+                return
+            } catch (error) {
+      
+                res.status(500).send()
+                return
+            } 
+        }
         
         if(activities) {
             activities = activities.split(',')
