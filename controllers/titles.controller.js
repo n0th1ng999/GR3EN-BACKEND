@@ -5,16 +5,7 @@ module.exports={
     getTitles: (req,res) =>{
         let {length = null, offset=null, titles = null} = req.query
         
-        if(titles){
-            titles = titles.split(',')
-            titles.forEach(title => {
-                isNumber(title, (result)=>{
-                    if(!result){
-                        res.status(400).send({error:"Only numbers are allowed in title query."})
-                    }
-                })
-            });
-        }
+    
 
         if(length && offset){
             if(isNumber(length) || isNumber(offset)){
