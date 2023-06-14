@@ -23,6 +23,10 @@ app.use('/badges',require('./routes/badges.router'))
 app.use('/occurrences',require('./routes/occurrences.router'))
 app.use('/rankings',require('./routes/ranking.router'))
 app.use('/titles',require('./routes/titles.router'))
+app.route('/').get(
+  (req,res) => {
+    res.send(app.routes)
+})
 
 //MONGO DB STUFF
 const {connectToDb} = require('./mongo')
