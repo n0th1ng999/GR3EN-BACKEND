@@ -51,6 +51,7 @@ module.exports={
     addOccurrence:(req,res) => {
         req.body.dataOcorrencia = Date.now()
         req.body.statusOcorrencia = false
+        req.body.idUser = res.locals.userId
         Occurrence.create(req.body)
         .then((occurrence) => {res.status(201).send(occurrence)})
         .catch((err) =>{res.status(400).send({error:err.message})})
