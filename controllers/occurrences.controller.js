@@ -52,8 +52,9 @@ module.exports={
         req.body.dataOcorrencia = Date.now()
         req.body.statusOcorrencia = false
         req.body.idUser = res.locals.userId
-
-        req.body.fotoOcorrencia = req.files.fotoOcorrencia.data
+        
+        req.body.fotoOcorrencia = req.files.fotoOcorrencia.data.toString('base64')
+      
         Occurrence.create(req.body)
         .then((occurrence) => {res.status(201).send(occurrence)})
         .catch((err) =>{res.status(400).send({error:err.message})})

@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
 const app = express();
 const cors = require('cors')
+const fileUpload = require('express-fileupload')
 app.use (cors({ origin: '*'}))
 
 
@@ -11,7 +12,7 @@ app.use (cors({ origin: '*'}))
 //Middleware
 app.use(express.json()) // ler json
 app.use(cookieParser()) // ler cookies
-
+app.use(fileUpload())
 // import configs
 config = require('./config')
 
