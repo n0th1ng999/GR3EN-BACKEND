@@ -64,7 +64,7 @@ module.exports={
         try {
             const occurrence =  await Occurrence.findById(String(req.params.occurrenceid)).exec()
             
-            await Occurrence.updateOne({_id: req.params.occurrenceid}, req.body).exec()
+            await Occurrence.findOneAndUpdate({_id: req.params.occurrenceid}, req.body).exec()
 
             if(req.body.hasOwnProperty('statusOcorrencia'))
             if(occurrence.statusOcorrencia != req.body.statusOcorrencia){
