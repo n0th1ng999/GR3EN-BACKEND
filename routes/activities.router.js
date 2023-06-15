@@ -25,7 +25,7 @@ router.route('/:activityid/users/:userid')
     .delete(auth_user,removeUserFromActivity)
 
 router.route('/:activityid/users/:userid/change-user-state')
-    .patch(auth_verifier,changeUserState)
+    .patch(auth_coordinator_activity,changeUserState)
    
 
 module.exports = router
