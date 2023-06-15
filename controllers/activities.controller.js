@@ -135,11 +135,11 @@ module.exports={
     },
     unEnroll: async (req,res) => {
 
-         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.locals.userId},  $pull: {participantesAtividadeNaoExecutado : req.locals.userId }})
+         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : res.locals.userId},  $pull: {participantesAtividadeNaoExecutado : res.locals.userId }})
         .then(result => {
             console.log(result)
             if(result.modifiedCount > 0){
-                res.status(204).send('tudo certo')  
+                res.status(204).send('User removed from activity')  
             }else{
                 res.status(400).json({error:'User does not exist'})
             }
