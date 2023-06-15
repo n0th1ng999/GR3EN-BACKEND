@@ -38,8 +38,10 @@ module.exports={
     },
     
     addOccurrence:(req,res) => {
+        
         req.body.dataOcorrencia = Date.now()
         req.body.statusOcorrencia = false
+        req.body.idUser = res.locals.userId
         Occurrence.create(req.body)
         .then((occurrence) => {res.status(201).send(occurrence)})
         .catch((err) =>{res.status(400).send({error:err.message})})
@@ -53,7 +55,7 @@ module.exports={
 
             if(req.body.hasOwnProperty('statusOcorrencia'))
             if(occurrence.statusOcorrencia != req.body.statusOcorrencia){
-
+                console.log(req.body)
                 occurrence.statusOcorrencia = req.body.statusOcorrencia
                 
 
@@ -68,24 +70,20 @@ module.exports={
                     await TitlesForOccurrences(user)
                     await BadgeForPoints(user)
                     await TitlesForPoints(user)
-             
                 }
                 if(req.body.statusOcorrencia == false){
-                    
                     user.pontos = user.pontos - occurrence.pontosOcorrencia
-                    
                     await BadgeForOccurrences(user)
                     await TitlesForOccurrences(user)
                     await BadgeForPoints(user)
                     await TitlesForPoints(user)
-             
                 }
 
                 await user.save()
             }
 
             
-            res.status(201).send({message:"Edit Successuful"})
+            res.status(201).send({statusOc: req.body.statusOcorrencia, message:"Edit Successuful"})
         } catch (error) {
             res.status(400).send({message:error.message})
         }
