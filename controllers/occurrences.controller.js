@@ -100,7 +100,7 @@ module.exports={
             }
 
             
-            res.status(201).send({message:"Edit Successuful"})
+            res.status(201).send({message:"Edit Successuful", })
         } catch (error) {
             res.status(400).send({message:error.message})
         }

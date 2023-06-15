@@ -102,6 +102,21 @@ module.exports={
         })
 
     },
+    enroll: async (req,res) => {
+        
+       
+        Activity.findById(req.params.activityid).then(result => {
+            if( result.participantesAtividadeNaoExecutado.some(id => id == res.locals.userId)
+            ||  result.participantesAtividadeExecutado.some(id => id == res.locals.userId)){
+                res.status(400).send({error: 'user already exists'})
+            }else{  
+                Activity.findOneAndUpdate({_id: req.params.activityid }, { $addToSet: {participantesAtividadeNaoExecutado : res.locals.userId}})
+                .then(result => {res.status(201).send(result)})
+                .catch(err => {res.status(400).send(err.message)});
+            }
+        })
+
+    },
     removeUserFromActivity: async (req,res) => {
 
          Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.params.userid},  $pull: {participantesAtividadeNaoExecutado : req.params.userid }})
@@ -116,10 +131,22 @@ module.exports={
         .catch(err => {
             res.status(400).send(err.message)
         });
-            
         
+    },
+    unEnroll: async (req,res) => {
 
-        
+         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.locals.userId},  $pull: {participantesAtividadeNaoExecutado : req.locals.userId }})
+        .then(result => {
+            console.log(result)
+            if(result.modifiedCount > 0){
+                res.status(204).send('tudo certo')  
+            }else{
+                res.status(400).json({error:'User does not exist'})
+            }
+        })
+        .catch(err => {
+            res.status(400).send(err.message)
+        });
         
     },
     changeUserState: async (req,res) => {
