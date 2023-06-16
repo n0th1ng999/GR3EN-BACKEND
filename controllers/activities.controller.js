@@ -60,7 +60,7 @@ module.exports={
         }
         req.body.statusAtividade =  false
         req.body.imagemAtividade = req.files.imagemAtividade.data.toString('base64')
-
+        
         Activity.create(req.body)   
         .then((activity) => { res.status(201).send(activity)})
         .catch((err) => {res.status(400).send({error: err.message})})
@@ -69,6 +69,9 @@ module.exports={
         delete req.body.statusAtividade
         delete req.body.participantesAtividadeNaoExecutado
         delete req.body.participantesAtividadeExecutado
+        
+        
+        req.body.imagemAtividade = req.files.imagemAtividade.data.toString('base64')
         Activity.updateOne({_id: req.params.activityid}, req.body)
         .then(activity => { 
             if(activity.modifiedCount > 0){

@@ -33,6 +33,7 @@ module.exports={
 
    
     createBadge: async (req,res) => {
+        req.body.imagemBadge = req.files.imagemBadge.data.toString('base64')
         Badge.create(req.body)
         .then(result => res.status(201).send({message : 'Badge created.'}))
         .catch((err) =>{res.status(500).send({err:err.message})})
@@ -52,6 +53,11 @@ module.exports={
     },
 
     editBadge : (req,res) =>{
+        if(req.files?.imagemBadge.data){
+            req.body.imagemBadge = req.files.imagemBadge.data.toString('base64')
+        }
+
+
         Badge.updateOne({_id:req.params.badgeid},req.body)
         .then(result => {
             if (result.acknowledged){

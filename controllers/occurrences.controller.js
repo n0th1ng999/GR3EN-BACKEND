@@ -54,12 +54,12 @@ module.exports={
         req.body.idUser = res.locals.userId
         
         req.body.fotoOcorrencia = req.files.fotoOcorrencia.data.toString('base64')
-      
+        
         Occurrence.create(req.body)
         .then((occurrence) => {res.status(201).send(occurrence)})
         .catch((err) =>{res.status(400).send({error:err.message})})
     },
-
+    
     editOccurrence: async (req,res) => {
         try {
             const occurrence =  await Occurrence.findById(String(req.params.occurrenceid)).exec()

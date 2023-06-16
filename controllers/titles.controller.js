@@ -29,6 +29,8 @@ module.exports={
     },
 
     createTitle:(req,res) =>{
+
+        
         Title.create(req.body)
         .then((title) => {res.status(201).send({message: 'Successuful title Creation'})})
         .catch(err => {res.status(400).send({error:err.message})})
