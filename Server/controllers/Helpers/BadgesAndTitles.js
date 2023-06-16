@@ -92,6 +92,7 @@ module.exports ={
     TitlesForActivities: async(user) => {
         const List_Of_Titles_For_Activities =  await Title.find({type:"ActivityCounter"})
         
+        console.log(List_Of_Titles_For_Activities)
 
         const ActivityCount = await Activity.find({$and:[{participantesAtividadeExecutado:user._id},{statusAtividade:true}]}).countDocuments().exec()
         
@@ -100,6 +101,7 @@ module.exports ={
             if(title.requirement <= ActivityCount){
                 if(!user.idTitulo.some(titleid => titleid.equals(title._id))){
 
+                    console.log(title)
                     
                     user.idTitulo.push(title._id)
                     user.pontos = user.pontos + title.points

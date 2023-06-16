@@ -151,5 +151,33 @@ describe('POST Badges', ()=>{
     const res = await request(app).post('/badges').set('Authorization', 'Bearer ' + userToken).send(data)
     expect(res.statusCode).equal(201)
   })
-  
+  it('returns status code 200 if badge is given', async()=>{
+    const user =
+    {
+      primeiroNome:"test1",
+      ultimoNome:"test1",
+      escola:"ESMAD1",
+      email:"test1@mail.com",
+      password:"test1",
+      idBadge: [], 
+      idTitulo: [], 
+      conselhoEco: true, 
+      verifierEco: true, 
+      pontos:0,
+    }
+    const data =
+        {
+          nomeBadge: "reqString", 
+          descricaoBadge: "reqString",
+          imagemBadge: "reqString",
+          pontosBadge: 10,
+          type: "ActivityCounter",
+          requirement: 5
+        }
+    const createUser = await request(app).post('/users').send(user)
+    userId=decodeToken(createUser.body.Token).id
+    const userToken = createToken(String(userId))
+    const res = await request(app).post('/badges').set('Authorization', 'Bearer ' + userToken).send(data)
+    expect(res.statusCode).equal(200)
+  })
 })

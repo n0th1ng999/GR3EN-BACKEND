@@ -137,6 +137,13 @@ module.exports={
         .catch(err => res.status(400).json({error: err.message}))
         
     },
+    
+    /* createUser: (req,res) => {
+        User.create(req.body)
+        .then(user => res.status(200).json(user))
+        .catch(err => res.status(400).json({error: err.message}))
+
+    }, */
 
     getUsers: async (req,res) => {
     
@@ -167,5 +174,20 @@ module.exports={
             .catch(err => res.status(500).send({error: err.message}))
         }
     },
+
+    /* getPartUser: (req,res) => {
+        // user = { primeiroNome:String, ultimoNome:String, ultimoNome:String, escola:String, password : String , email : String,  }
+        let {length=null, offset=null, users = null} = req.query
+        if(users)  
+            users = users.split(',')
+        if(length && offset){
+            User.find().skip(offset).limit(length).then(users => { res.status(206).json(users)}).catch(err => { res.status(400).send({err: err.message})})
+        }else if(users){
+            User.find().where('_id').in(users)
+            .select('primeiroNome ultimoNome escola email password')
+            .then((users) => { res.status(206).json(users) })
+            .catch(err => res.status(500).send({error: err.message}))
+        } 
+    }, */
     
 } 
