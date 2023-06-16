@@ -38,13 +38,18 @@ module.exports={
     },
     
     addOccurrence:(req,res) => {
-        
         req.body.dataOcorrencia = Date.now()
         req.body.statusOcorrencia = false
         req.body.idUser = res.locals.userId
+        req.body.fotoOcorrencia = req.files.fotoOcorrencia.data.toString('base64')
+
         Occurrence.create(req.body)
-        .then((occurrence) => {res.status(201).send(occurrence)})
-        .catch((err) =>{res.status(400).send({error:err.message})})
+        .then((occurrence) => {
+            res.status(201).send({occurrence: occurrence})
+        })
+        .catch((err) =>{
+            res.status(400).send({error:err.message})   
+        })
     },
 
     editOccurrence: async (req,res) => {
@@ -55,7 +60,6 @@ module.exports={
 
             if(req.body.hasOwnProperty('statusOcorrencia'))
             if(occurrence.statusOcorrencia != req.body.statusOcorrencia){
-                console.log(req.body)
                 occurrence.statusOcorrencia = req.body.statusOcorrencia
                 
 
@@ -72,7 +76,7 @@ module.exports={
                     await TitlesForPoints(user)
                 }
                 if(req.body.statusOcorrencia == false){
-                    user.pontos = user.pontos - occurrence.pontosOcorrencia
+                       user.pontos = user.pontos - occurrence.pontosOcorrencia
                     await BadgeForOccurrences(user)
                     await TitlesForOccurrences(user)
                     await BadgeForPoints(user)
@@ -82,8 +86,7 @@ module.exports={
                 await user.save()
             }
 
-            
-            res.status(201).send({statusOc: req.body.statusOcorrencia, message:"Edit Successuful"})
+            res.status(201).json({statusOc: req.body.statusOcorrencia, message:"Edit Successuful"})
         } catch (error) {
             res.status(400).send({message:error.message})
         }
