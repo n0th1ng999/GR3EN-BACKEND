@@ -55,9 +55,10 @@ module.exports={
     createActivity: async  (req,res) => {
 
         req.body.coordenadorAtividade = res.locals.userId
-        req.body.dataHoraAtividade = Date.now()
+        if(!req.body?.dataHoraAtividade){
+            req.body.dataHoraAtividade = Date.now()
+        }
         req.body.statusAtividade =  false
-
         req.body.imagemAtividade = req.files.imagemAtividade.data.toString('base64')
 
         Activity.create(req.body)   
