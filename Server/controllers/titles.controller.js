@@ -5,24 +5,16 @@ module.exports={
     getTitles: (req,res) =>{
         let {length = null, offset=null, titles = null} = req.query
         
-        if(titles){
-            titles = titles.split(',')
-            titles.forEach(title => {
-                isNumber(title, (result)=>{
-                    if(!result){
-                        res.status(400).send({error:"Only numbers are allowed in title query."})
-                    }
-                }) 
-            });
-        }
+    
 
         if(length && offset){
-            if(isNumber(length, (result) => {return result}) || isNumber(offset, (result) => {return result})){
+            if(isNumber(length) || isNumber(offset)){
                 res.status(400).send({error:"Only numbers are allowed in offset and length queries."})
                 return   
             }
-            Title.find().skip(offset).limit(length).then(titles => {res.status(200).json(titles)}).catch(err => {res.status(400).send({error: err.message})})
+            Title.find().skip(offset).limit(length).then(titles => {res.status(206).json(titles)}).catch(err => {res.status(400).send({error: err.message})})
         }else if(length || offset){
+           
             res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
         
         }else if(titles){
@@ -37,8 +29,10 @@ module.exports={
     },
 
     createTitle:(req,res) =>{
+
+        
         Title.create(req.body)
-        .then((title) => {res.status(201).send({message: 'Successful title Creation'})})
+        .then((title) => {res.status(201).send({message: 'Successuful title Creation'})})
         .catch(err => {res.status(400).send({error:err.message})})
     },
 

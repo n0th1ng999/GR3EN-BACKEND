@@ -1,28 +1,19 @@
 const Badge = require('../models/badge.model')
-const User = require('../models/user.model')
-const occurrences = require('../models/occurrence.model')
-
-
-//Requerimentos
-const giveBadge = (userid,nOcorrencias,idBadge) => {
-    let occurrencesList = occurrences.find({idUser:req.params.idUser})
-    let badge = Badge.findById(idBadge).exec()
-
-    if(occurrencesList.length == nOcorrencias){
-        let user = User.findById(userid).exec()
-        User.updateOne({_id:userid},{$addToSet:{idBadge:idBadge} , pontos:user.pontos + badge.pontosBadge}).exec()
-        return true
-   } 
-}
-
-/* const giveBadge2 = (userid,nomeLocalAtividade,idBadge) => {
-
-} */
-
 
 module.exports={
 
     getBadges: (req,res) => {
+        let {badges = null} = req.query
+
+        if(badges){
+            badges = badges.split(',')
+
+            Badge.find().where('_id').in(badges)
+            .then((badges) => {res.status(206).json(badges)})
+            .catch(err => res.status(400).send({error:err.message}))
+            return
+        }
+
         Badge.find()
         .then((result) => {res.status(200).json(result)})
     },
@@ -32,7 +23,7 @@ module.exports={
         .then((result) => {
             if(result != {}){
                 res.status(200).json(result)
-                /* console.log(result) */
+               
             }else{
                 res.status(404).send({message: "Badge not found."})
             }
@@ -40,20 +31,9 @@ module.exports={
         .catch(err => res.status(500).send({error: err.message}))
     },
 
-    giveBadgeList:(userid)=>{
-        const List_Of_Badge_Functions = [
-            //O badge tem de existir (Obviamente)
-            [1,'6464fef0974889a5887b91b3']
-        ]
-
-        List_Of_Badge_Functions.forEach(el => {
-            if(giveBadge(userid,el[0],el[1])){
-                return
-        }})
-        
-    },
-
+   
     createBadge: async (req,res) => {
+        req.body.imagemBadge = req.files.imagemBadge.data.toString('base64')
         Badge.create(req.body)
         .then(result => res.status(201).send({message : 'Badge created.'}))
         .catch((err) =>{res.status(500).send({err:err.message})})
@@ -73,6 +53,11 @@ module.exports={
     },
 
     editBadge : (req,res) =>{
+        if(req.files?.imagemBadge.data){
+            req.body.imagemBadge = req.files.imagemBadge.data.toString('base64')
+        }
+
+
         Badge.updateOne({_id:req.params.badgeid},req.body)
         .then(result => {
             if (result.acknowledged){

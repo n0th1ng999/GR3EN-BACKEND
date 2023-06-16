@@ -1,13 +1,24 @@
-const Occurrence = require('./../models/occurrence.model')
-const User = require('./../models/user.model')
+const Occurrence = require('./Helpers/occurrence.model')
+const User = require('../models/user.model')
 const isNumber = require('./Helpers/isNumber')
 const {BadgeForOccurrences,BadgeForPoints,TitlesForOccurrences,TitlesForPoints} = require('./Helpers/BadgesAndTitles')
 
 module.exports={
 
     getOccurrences: async (req,res) =>{
-        let {length=null, offset=null, occurrences = null} = req.query
+        let { length= null, offset=null, occurrences = null, userid = null } = req.query
         
+        if(userid){
+            try {
+                res.status(200).json(await Occurrence.find({idUser:userid}))
+                return
+            } catch (error) {
+      
+                res.status(500).send()
+                return
+            } 
+        }
+
         if(occurrences){
 
             occurrences = occurrences.split(',')      
@@ -41,25 +52,23 @@ module.exports={
         req.body.dataOcorrencia = Date.now()
         req.body.statusOcorrencia = false
         req.body.idUser = res.locals.userId
+        
         req.body.fotoOcorrencia = req.files.fotoOcorrencia.data.toString('base64')
-
+        
         Occurrence.create(req.body)
-        .then((occurrence) => {
-            res.status(201).send({occurrence: occurrence})
-        })
-        .catch((err) =>{
-            res.status(400).send({error:err.message})   
-        })
+        .then((occurrence) => {res.status(201).send(occurrence)})
+        .catch((err) =>{res.status(400).send({error:err.message})})
     },
-
+    
     editOccurrence: async (req,res) => {
         try {
             const occurrence =  await Occurrence.findById(String(req.params.occurrenceid)).exec()
             
-            await Occurrence.updateOne({_id: req.params.occurrenceid}, req.body).exec()
+            await Occurrence.findOneAndUpdate({_id: req.params.occurrenceid}, req.body).exec()
 
             if(req.body.hasOwnProperty('statusOcorrencia'))
             if(occurrence.statusOcorrencia != req.body.statusOcorrencia){
+
                 occurrence.statusOcorrencia = req.body.statusOcorrencia
                 
 
@@ -74,19 +83,24 @@ module.exports={
                     await TitlesForOccurrences(user)
                     await BadgeForPoints(user)
                     await TitlesForPoints(user)
+             
                 }
                 if(req.body.statusOcorrencia == false){
-                       user.pontos = user.pontos - occurrence.pontosOcorrencia
+                    
+                    user.pontos = user.pontos - occurrence.pontosOcorrencia
+                    
                     await BadgeForOccurrences(user)
                     await TitlesForOccurrences(user)
                     await BadgeForPoints(user)
                     await TitlesForPoints(user)
+             
                 }
 
                 await user.save()
             }
 
-            res.status(201).json({statusOc: req.body.statusOcorrencia, message:"Edit Successuful"})
+            
+            res.status(201).send({message:"Edit Successuful", })
         } catch (error) {
             res.status(400).send({message:error.message})
         }

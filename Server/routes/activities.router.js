@@ -1,7 +1,7 @@
 const express = require('express')
 const {auth_user,auth_admin,auth_coordinator_activity,auth_verifier} = require('../controllers/auth.controller') // Authentication Middleware 
 const router = express.Router()
-const { getActivities, createActivity, addUserToActivity, editActivity, deleteActivity,removeUserFromActivity, changeUserState, changeActivityState } = require('./../controllers/activities.controller') 
+const { getActivities, createActivity, addUserToActivity, editActivity, deleteActivity,removeUserFromActivity, changeUserState, changeActivityState, enroll, unEnroll } = require('./../controllers/activities.controller') 
 
 router.route('/')
     .get(getActivities)
@@ -16,12 +16,16 @@ router.route('/:activityid')
 router.route('/:activityid/change-activity-state')
 .patch(auth_coordinator_activity,changeActivityState)
 
+router.route('/:activityid/enroll')
+    .post(auth_user,enroll)
+    .delete(auth_user,unEnroll)
+
 router.route('/:activityid/users/:userid')
-    .post(auth_user,addUserToActivity)
-    .delete(auth_user,removeUserFromActivity)
+    .post(auth_coordinator_activity,addUserToActivity)
+    .delete(auth_coordinator_activity,removeUserFromActivity)
 
 router.route('/:activityid/users/:userid/change-user-state')
-    .patch(auth_verifier,changeUserState)
+    .patch(auth_coordinator_activity,changeUserState)
    
 
 module.exports = router

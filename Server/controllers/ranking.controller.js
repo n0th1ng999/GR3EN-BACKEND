@@ -10,7 +10,7 @@ module.exports={
         .then()
         .catch(err => {});
 
-        const rankingData = topUsers.map(topUsers => ({id: topUsers.id, pontos:topUsers.pontos, primeiroNome: topUsers.primeiroNome }))
+        const rankingData = topUsers.map(topUsers => ({id: topUsers.id, pontos:topUsers.pontos, primeiroNome: topUsers.primeiroNome, ultimoNome: topUsers.ultimoNome}))
         
         let LastYearRanking = await Ranking.findOne().sort({createdAt: -1}).limit(1).lean().then().catch(err => {})
         
@@ -23,17 +23,17 @@ module.exports={
                     year:[Number(LastYearRanking.year[0])+1,Number(LastYearRanking.year[1])+1],
                     users:rankingData
                 }).then(result => res.status(201).json({message: "New Ranking Sucessufully Created"}))
-            User.updateMany({},{$set: {pontos: 0}}).then().catch(err => {
-            
-            })
+                
+                User.updateMany({},{$set: {pontos: 0}}).exec()
         }else{
             NewRanking = await Ranking.create(
                 {
                     year:[Number(new Date(Date.now()).getFullYear()),Number(new Date(Date.now()).getFullYear())+1],
                     users:rankingData
                 }).then(result => res.status(201).json({message: "New Ranking Sucessufully Created"}))
-            User.updateMany({},{$set: {pontos: 0}})
-            
+                
+            User.updateMany({},{$set: {pontos: 0}}).exec()
+    
         }
      
         

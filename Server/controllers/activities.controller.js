@@ -8,7 +8,18 @@ const {BadgeForActivities,BadgeForPoints,TitlesForActivities,TitlesForPoints} = 
 
 module.exports={
     getActivities:async (req, res)=> {
-        let {length=null, offset=null, activities = null} = req.query
+        let {length=null, offset=null, activities = null, userid = null} = req.query
+        
+        if(userid){
+            try {
+                res.status(200).json(await Activity.find({$or:[{participantesAtividadeExecutado:userid},{participantesAtividadeNaoExecutado:userid}]}))
+                return
+            } catch (error) {
+      
+                res.status(500).send()
+                return
+            } 
+        }
         
         if(activities) {
             activities = activities.split(',')
@@ -44,9 +55,12 @@ module.exports={
     createActivity: async  (req,res) => {
 
         req.body.coordenadorAtividade = res.locals.userId
-        req.body.dataHoraAtividade = Date.now()
+        if(!req.body?.dataHoraAtividade){
+            req.body.dataHoraAtividade = Date.now()
+        }
         req.body.statusAtividade =  false
-
+        req.body.imagemAtividade = req.files.imagemAtividade.data.toString('base64')
+        
         Activity.create(req.body)   
         .then((activity) => { res.status(201).send(activity)})
         .catch((err) => {res.status(400).send({error: err.message})})
@@ -55,6 +69,9 @@ module.exports={
         delete req.body.statusAtividade
         delete req.body.participantesAtividadeNaoExecutado
         delete req.body.participantesAtividadeExecutado
+        
+        
+        req.body.imagemAtividade = req.files.imagemAtividade.data.toString('base64')
         Activity.updateOne({_id: req.params.activityid}, req.body)
         .then(activity => { 
             if(activity.modifiedCount > 0){
@@ -91,6 +108,21 @@ module.exports={
         })
 
     },
+    enroll: async (req,res) => {
+        
+       
+        Activity.findById(req.params.activityid).then(result => {
+            if( result.participantesAtividadeNaoExecutado.some(id => id == res.locals.userId)
+            ||  result.participantesAtividadeExecutado.some(id => id == res.locals.userId)){
+                res.status(400).send({error: 'user already exists'})
+            }else{  
+                Activity.findOneAndUpdate({_id: req.params.activityid }, { $addToSet: {participantesAtividadeNaoExecutado : res.locals.userId}})
+                .then(result => {res.status(201).send(result)})
+                .catch(err => {res.status(400).send(err.message)});
+            }
+        })
+
+    },
     removeUserFromActivity: async (req,res) => {
 
          Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : req.params.userid},  $pull: {participantesAtividadeNaoExecutado : req.params.userid }})
@@ -104,10 +136,22 @@ module.exports={
         .catch(err => {
             res.status(400).send(err.message)
         });
-            
         
+    },
+    unEnroll: async (req,res) => {
 
-        
+         Activity.updateOne({_id: req.params.activityid }, { $pull: {participantesAtividadeExecutado : res.locals.userId},  $pull: {participantesAtividadeNaoExecutado : res.locals.userId }})
+        .then(result => {
+            console.log(result)
+            if(result.modifiedCount > 0){
+                res.status(204).send('User removed from activity')  
+            }else{
+                res.status(400).json({error:'User does not exist'})
+            }
+        })
+        .catch(err => {
+            res.status(400).send(err.message)
+        });
         
     },
     changeUserState: async (req,res) => {

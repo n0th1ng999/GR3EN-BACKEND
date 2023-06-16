@@ -6,11 +6,10 @@ const {giveBadgeList,createBadge,getBadges,deleteBadge,getBadge,editBadge} = req
 module.exports = router
 
 router.route('/')
-    .get(getBadges,auth_user)
-    .put(giveBadgeList)
+    .get(getBadges)
     .post(auth_admin,createBadge)
 
 router.route('/:badgeid')
-    .get(getBadge,auth_user)
+    .get(getBadge)
     .put(auth_admin,editBadge)
     .delete(auth_admin,deleteBadge)
