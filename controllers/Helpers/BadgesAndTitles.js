@@ -1,6 +1,6 @@
 const Badge = require('../../models/badge.model')
 const Title = require('../../models/title.model')
-const Occurrence = require('../../models/occurrence.model')
+const Occurrence = require('./occurrence.model')
 const Activity = require('../../models/activity.model')
 const { ObjectId } = require('mongodb')
 

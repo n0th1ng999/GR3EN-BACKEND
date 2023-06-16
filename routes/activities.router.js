@@ -21,8 +21,8 @@ router.route('/:activityid/enroll')
     .delete(auth_user,unEnroll)
 
 router.route('/:activityid/users/:userid')
-    .post(auth_user,addUserToActivity)
-    .delete(auth_user,removeUserFromActivity)
+    .post(auth_coordinator_activity,addUserToActivity)
+    .delete(auth_coordinator_activity,removeUserFromActivity)
 
 router.route('/:activityid/users/:userid/change-user-state')
     .patch(auth_coordinator_activity,changeUserState)
