@@ -58,6 +58,8 @@ module.exports={
         req.body.dataHoraAtividade = Date.now()
         req.body.statusAtividade =  false
 
+        req.body.imagemAtividade = req.files.fotoOcorrencia.data.toString('base64')
+
         Activity.create(req.body)   
         .then((activity) => { res.status(201).send(activity)})
         .catch((err) => {res.status(400).send({error: err.message})})
