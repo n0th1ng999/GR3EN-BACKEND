@@ -3,19 +3,29 @@ const Badge = require('../models/badge.model')
 module.exports={
 
     getBadges: (req,res) => {
-        let {badges = null} = req.query
+        let {length = null, offset=null, badges = null} = req.query
+        
+    
 
-        if(badges){
-            badges = badges.split(',')
-
+        if(length && offset){
+            if(isNumber(length) || isNumber(offset)){
+                res.status(400).send({error:"Only numbers are allowed in offset and length queries."})
+                return   
+            }
+            Badge.find().skip(offset).limit(length).then(badge => {res.status(206).json(badges)}).catch(err => {res.status(400).send({error: err.message})})
+        }else if(length || offset){
+           
+            res.status(400).json({error:"Incorrect query use (you must use offset and length at the same time)"})
+        
+        }else if(badges){
             Badge.find().where('_id').in(badges)
             .then((badges) => {res.status(206).json(badges)})
             .catch(err => res.status(400).send({error:err.message}))
-            return
+        }else{
+            Badge.find().then((badges) =>{
+                res.status(200).json(badges)
+            })
         }
-
-        Badge.find()
-        .then((result) => {res.status(200).json(result)})
     },
 
     getBadge: (req,res) => {
